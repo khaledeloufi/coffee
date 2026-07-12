@@ -838,6 +838,13 @@ footer {
 
 .product-visual { flex: 0 0 auto; perspective: 800px; }
 
+.product-logo {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    animation: float 5s ease-in-out infinite;
+}
+
 .turkish-coffee-icon {
     position: relative;
     width: 200px;
