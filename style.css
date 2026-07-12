@@ -124,6 +124,21 @@ a { text-decoration: none; color: inherit; }
     0%, 100% { transform: translateY(0); }
     50%      { transform: translateY(-12px); }
 }
+@keyframes logoFloat {
+    0%   { transform: translateY(0) rotate(0deg); }
+    25%  { transform: translateY(-8px) rotate(2deg); }
+    50%  { transform: translateY(-12px) rotate(0deg); }
+    75%  { transform: translateY(-8px) rotate(-2deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+@keyframes logoGlow {
+    0%, 100% { filter: drop-shadow(0 0 6px rgba(212,165,116,0.2)); }
+    50%      { filter: drop-shadow(0 0 18px rgba(212,165,116,0.55)); }
+}
+@keyframes logoShimmer {
+    0%   { transform: translateX(-100%) skewX(-15deg); }
+    100% { transform: translateX(300%) skewX(-15deg); }
+}
 @keyframes spinSlow {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
@@ -320,9 +335,9 @@ header {
     -webkit-backdrop-filter: blur(12px);
     color: #faf6f0;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    padding: 22px 60px;
+    padding: 20px 60px 16px;
     position: fixed;
     width: 100%;
     top: 0;
@@ -333,12 +348,37 @@ header {
 }
 header.scrolled {
     background: rgba(44, 24, 16, 0.97);
-    padding: 16px 60px;
+    padding: 14px 60px 12px;
     box-shadow: 0 4px 30px rgba(0,0,0,0.3);
     border-bottom-color: rgba(212, 165, 116, 0.2);
 }
 
 .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+}
+.logo::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    animation: logoShimmer 4s ease-in-out infinite;
+    pointer-events: none;
+}
+.header-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    animation: logoFloat 5s ease-in-out infinite, logoGlow 3s ease-in-out infinite;
+}
+.logo-text {
     display: flex;
     align-items: baseline;
     gap: 10px;
@@ -367,6 +407,11 @@ header.scrolled {
     letter-spacing: 4px;
 }
 
+nav {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
 nav a {
     margin-right: 30px;
     font-size: 1.05em;
@@ -518,16 +563,15 @@ footer {
 
 @media (max-width: 700px) {
     header {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 4px;
+        flex-direction: column;
+        align-items: center;
         padding: 14px 12px;
     }
     header.scrolled {
         padding: 10px 12px;
     }
-    .logo { gap: 4px; }
+    .logo { gap: 8px; }
+    .header-logo { width: 40px; height: 40px; }
     .arabic-logo { font-size: 1.3em; }
     .english-logo { font-size: 0.7em; }
     nav {
@@ -536,6 +580,7 @@ footer {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         gap: 0;
+        margin-top: 6px;
         scrollbar-width: none;
     }
     nav::-webkit-scrollbar { display: none; }
@@ -836,13 +881,35 @@ footer {
     flex-wrap: nowrap;
 }
 
-.product-visual { flex: 0 0 auto; perspective: 800px; }
+.product-visual {
+    flex: 0 0 auto;
+    perspective: 800px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+.product-visual::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    margin-top: 70px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    animation: logoShimmer 4s ease-in-out infinite;
+    pointer-events: none;
+}
 
 .product-logo {
-    width: 180px;
-    height: 180px;
-    object-fit: contain;
-    animation: float 5s ease-in-out infinite;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    animation: logoFloat 5s ease-in-out infinite, logoGlow 3s ease-in-out infinite;
+    margin-top: 70px;
 }
 
 .turkish-coffee-icon {
