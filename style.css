@@ -358,25 +358,15 @@ header.scrolled {
     align-items: center;
     gap: 14px;
     position: relative;
-    overflow: hidden;
 }
 .logo::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-    animation: logoShimmer 4s ease-in-out infinite;
-    pointer-events: none;
+    display: none;
 }
 .header-logo {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    animation: logoFloat 5s ease-in-out infinite, logoGlow 3s ease-in-out infinite;
 }
 .logo-text {
     display: flex;
