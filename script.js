@@ -133,12 +133,32 @@
 })();
 
 (function () {
+    let cart = JSON.parse(localStorage.getItem('malaz_cart')) || [];
+
+    function saveCart() {
+        localStorage.setItem('malaz_cart', JSON.stringify(cart));
+        updateBadge();
+    }
+
+    function updateBadge() {
+        const badge = document.getElementById('cartBadge');
+        if (!badge) return;
+        const total = cart.reduce((sum, item) => sum + item.count, 0);
+        badge.textContent = total;
+        badge.style.display = total > 0 ? 'flex' : 'none';
+        if (total > 0) {
+            badge.classList.remove('bounce');
+            void badge.offsetWidth;
+            badge.classList.add('bounce');
+        }
+    }
+
     const orderSections = document.querySelectorAll('.order-section');
 
     orderSections.forEach(section => {
         const productName = section.dataset.product || 'القهوة التركي';
         const qtyBtns = section.querySelectorAll('.qty-btn');
-        const orderBtn = section.querySelector('.order-btn');
+        const addBtn = section.querySelector('.add-to-cart-btn');
         let selectedQty = 'ربع كيلو (250g)';
 
         qtyBtns.forEach(btn => {
@@ -149,12 +169,112 @@
             });
         });
 
-        orderBtn.addEventListener('click', () => {
-            const msg = `مرحباً مَلَاذ 🙋\n\nأريد طلب:\n▪ ${productName}\n▪ الكمية: ${selectedQty}\n\nالرجاء تأكيد الطلب والتوصيل.`;
+        addBtn.addEventListener('click', () => {
+            const existing = cart.find(i => i.name === productName && i.qty === selectedQty);
+            if (existing) {
+                existing.count++;
+            } else {
+                cart.push({ name: productName, qty: selectedQty, count: 1 });
+            }
+            saveCart();
+
+            addBtn.textContent = '✓ تمت الإضافة';
+            addBtn.classList.add('added');
+            setTimeout(() => {
+                addBtn.textContent = '🛒 أضف للسلة';
+                addBtn.classList.remove('added');
+            }, 1200);
+        });
+    });
+
+    const cartBtn = document.getElementById('cartBtn');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const cartClose = document.getElementById('cartClose');
+    const cartItems = document.getElementById('cartItems');
+    const cartFooter = document.getElementById('cartFooter');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartWhatsapp = document.getElementById('cartWhatsapp');
+
+    function renderCart() {
+        if (!cartItems) return;
+        if (cart.length === 0) {
+            cartItems.innerHTML = '<p class="cart-empty">السلة فاضية — أضف منتجات أولاً</p>';
+            cartFooter.style.display = 'none';
+            return;
+        }
+
+        cartFooter.style.display = 'block';
+        let html = '';
+        cart.forEach((item, idx) => {
+            html += `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <span class="cart-item-name">${item.name}</span>
+                        <span class="cart-item-qty">${item.qty}</span>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="cart-count-btn" data-idx="${idx}" data-action="minus">−</button>
+                        <span class="cart-item-count">${item.count}</span>
+                        <button class="cart-count-btn" data-idx="${idx}" data-action="plus">+</button>
+                        <button class="cart-remove-btn" data-idx="${idx}">✕</button>
+                    </div>
+                </div>`;
+        });
+        cartItems.innerHTML = html;
+
+        cartItems.querySelectorAll('.cart-count-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.dataset.idx);
+                if (btn.dataset.action === 'plus') {
+                    cart[idx].count++;
+                } else {
+                    cart[idx].count--;
+                    if (cart[idx].count <= 0) cart.splice(idx, 1);
+                }
+                saveCart();
+                renderCart();
+            });
+        });
+
+        cartItems.querySelectorAll('.cart-remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                cart.splice(parseInt(btn.dataset.idx), 1);
+                saveCart();
+                renderCart();
+            });
+        });
+    }
+
+    if (cartBtn) {
+        cartBtn.addEventListener('click', () => {
+            renderCart();
+            cartOverlay.classList.add('active');
+        });
+    }
+
+    if (cartClose) {
+        cartClose.addEventListener('click', () => cartOverlay.classList.remove('active'));
+    }
+
+    if (cartOverlay) {
+        cartOverlay.addEventListener('click', (e) => {
+            if (e.target === cartOverlay) cartOverlay.classList.remove('active');
+        });
+    }
+
+    if (cartWhatsapp) {
+        cartWhatsapp.addEventListener('click', () => {
+            let msg = 'مرحباً مَلَاذ 🙋\n\nأريد طلب:\n';
+            cart.forEach(item => {
+                msg += `▪ ${item.name} — ${item.qty} × ${item.count}\n`;
+            });
+            msg += '\nالرجاء تأكيد الطلب والتوصيل.';
             const url = `https://wa.me/201282256742?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
         });
-    });
+    }
+
+    updateBadge();
 
     const rotatables = document.querySelectorAll('.rotate-360');
     rotatables.forEach(rotatable => {
@@ -217,4 +337,106 @@
             setTimeout(() => { card.style.transition = ''; }, 500);
         });
     });
+})();
+
+// --- Dynamic Greeting ---
+(function () {
+    const el = document.getElementById('heroGreeting');
+    if (!el) return;
+
+    const hour = new Date().getHours();
+    let greeting;
+
+    if (hour >= 5 && hour < 12) {
+        greeting = 'صباح القهوة ☀️';
+    } else if (hour >= 12 && hour < 17) {
+        greeting = 'مساء النشاط ☕';
+    } else if (hour >= 17 && hour < 21) {
+        greeting = 'مساء الهدوء 🌙';
+    } else {
+        greeting = 'ليلة هانئة ✨';
+    }
+
+    const visited = localStorage.getItem('malaz_visited');
+    if (visited) {
+        el.textContent = 'أهلاً بعودتك! ' + greeting;
+    } else {
+        el.textContent = greeting;
+    }
+    localStorage.setItem('malaz_visited', 'true');
+})();
+
+// --- Message of the Day (2 per day = 60 quotes = 30 days) ---
+(function () {
+    const el = document.getElementById('heroDotd');
+    if (!el) return;
+
+    const quotes = [
+        'القهوة الجيدة تبدأ من حبوب مختارة بعناية.',
+        'كل فنجان قصة، وكل رشفة ذكرى.',
+        'القهوة هي لحظة صفاء في عالم مشحون.',
+        'من الحبوب إلى الفنجان... نقدم لك الأصالة.',
+        'أحلى لحظات اليوم تبدأ مع فنجان مَلَاذ.',
+        'القهوة ليست مجرد مشروب، إنها تجربة.',
+        'في كل فنجان مَلَاذ... حكاية من أجود الحبوب.',
+        'القهوة العربية: أصالة عمرها مئات السنين.',
+        'ابدأ يومك بفنجان يروي ظمأ روحك.',
+        'القهوة الراقية لا تُعجّل، تُقدَّم بحب.',
+        'القهوة كالصداقة.. كلما كانت أصيلة، كانت أروع.',
+        'فنجانك في مَلَاذ... هو لحظتك مع نفسك.',
+        'نؤمن بأن القهوة الجيدة تصنع يوماً أفضل.',
+        'حبوبنا تُحمّص بحب، وتُقدَّم بفخر.',
+        'مَلَاذ... حيث يلتقي الطعم بالأصالة.',
+        'القهوة المثالية هي التي تبقى في الذاكرة.',
+        'استمتع بكل رشفة، فهي لحظة لا تتكرر.',
+        'القهوة تجمعنا، والمذاق يربطنا.',
+        'من مزارع العالم إلى فنجانك... قصة مَلَاذ.',
+        'أصالة الماضي، عبق الحاضر، في فنجان مَلَاذ.',
+        'لا تُسرع في فنجانك، الحياة أجمل بهدوء.',
+        'القهوة العربية فن، ومَلَاذ صاحب الفن.',
+        'في كل صباح، فنجانك ينتظرك في مَلَاذ.',
+        'القهوة تصنع الفارق، ومَلَاذ يصنع القهوة.',
+        'أحلى صباح مع فنجان مَلَاذ.',
+        'القهوة الجيدة صديقك في كل الأوقات.',
+        'مَلَاذ... لأنك تستحق الأفضل.',
+        'كل فنجان في مَلَاذ... تحفة فنية.',
+        'القهوة تروي الظما، ومَلَاذ تروي الروح.',
+        'القهوة العربية تقليد عريق، ومَلَاذ حارس هذا التقليد.',
+        'القهوة كالحياة.. أحياناً مُرّة وأحياناً حلوة، لكنها دائماً تستحق.',
+        'لا تبدأ يومك دون فنجان يُشعّل شغفك.',
+        'القهوة التي تحبّها... هي التي تصنع لحظاتك المفضلة.',
+        'أجود الحبوب تصنع أجود القهوة، وأجود القهوة تصنع أسعد اللحظات.',
+        'القهوة المحمّصة بحب... تُقدَّم بفرق.',
+        'في صمت الصباح، فنجان القهوة يحكي لك.',
+        'مَلَاذ لا تُقدّم قهوة فحسب، بل تُقدّم تجربة.',
+        'القهوة الجيدة لا تحتاج إلى كلام، شرشفتها تكفي.',
+        'حبوب بن كولومبية، هندية، عربية... كل حبة تروي قصة.',
+        'القهوة العربية فن قديم، ومَلَاذ يُحييه بأسلوب عصري.',
+        'فنجان واحد يغيّر نهارك بالكامل.',
+        'القهوة التي تُصنع بحب... تُشرب بشغف.',
+        'لا شيء يُضاهي رائحة القهوة المحمّصة طازجة.',
+        'مَلَاذ... لأن كل فنجان يستحق أن يكون مميزاً.',
+        'القهوة ليست عن التسريع، إنها عن الاستمتاع باللحظة.',
+        'من حبوب العالم إلى فنجانك... مَلَاذ تختار لك الأفضل.',
+        'القهوة تجمع الأصدقاء، وفنجان مَلَاذ يجمع القلوب.',
+        'صباحك لا يكتمل دون فنجانك المفضل.',
+        'القهوة كالموسيقى.. كل نوع لها لحن خاص.',
+        'مَلَاذ... حيث يتحول الفنجان إلى ذكرى.',
+        'القهوة الراقية تُقدَّم ببساطة، وتترك أثراً عميقاً.',
+        'في كل رشفة من فنجانك... تذوّق حبوب العالم.',
+        'أصالة القهوة العربية تبدأ من اختيار الحبة الصحيحة.',
+        'مَلَاذ تؤمن بأن التفاصيل الصغيرة تصنع الفرق الكبير.',
+        'القهوة كالحبيبة.. تستاهل اللي يختارها بعناية.',
+        'لا تقلّل من شأن فنجان قهوة جيد، فقد يُغيّر يومك.',
+        'حبوبنا تُحمّص كل صباح لتصل إليك بأجود حال.',
+        'مَلَاذ... لأنك تستحق قهوة تليق بذوقك.',
+        'القهوة العربية ليست مجرد عادة، إنها هوية.',
+        'كل فنجان في مَلَاذ يحمل حبّاً وعناية لا تنتهي.'
+    ];
+
+    const now = new Date();
+    const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+    const isEvening = now.getHours() >= 14;
+    const quoteIndex = ((dayOfYear * 2) + (isEvening ? 1 : 0)) % quotes.length;
+    el.textContent = quotes[quoteIndex];
 })();
