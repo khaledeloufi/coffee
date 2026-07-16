@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مَلَاذ | أصل القهوة</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="loading-screen">
+        <div class="loading-particles" id="loadingParticles"></div>
+        <div class="loading-steam">
+            <div class="steam-line s1"></div>
+            <div class="steam-line s2"></div>
+            <div class="steam-line s3"></div>
+        </div>
+        <div class="loading-cup"><svg viewBox="0 0 100 100" class="loading-cup-svg" width="64" height="64"><ellipse cx="50" cy="76" rx="34" ry="8" fill="#d4a574" opacity="0.25"/><path d="M30 44 Q30 74 50 74 Q70 74 70 44Z" fill="url(#lcg)"/><ellipse cx="50" cy="44" rx="20" ry="7" fill="#faf6f0" stroke="#d4a574" stroke-width="0.8"/><ellipse cx="50" cy="47" rx="17" ry="5" fill="#6b3a1f"/><path d="M70 49 Q86 49 86 60 Q86 70 70 68" stroke="#f5f0eb" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M43 34 Q39 25 44 18" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.35" stroke-linecap="round"/><path d="M50 32 Q47 23 52 15" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.25" stroke-linecap="round"/><path d="M57 34 Q53 25 58 18" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.35" stroke-linecap="round"/><defs><linearGradient id="lcg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#faf6f0"/><stop offset="100%" stop-color="#e8ddd0"/></linearGradient></defs></svg></div>
+        <div class="loading-typewriter">
+            <span class="tw-line" id="twArabic"></span>
+            <span class="tw-line tw-english" id="twEnglish"></span>
+        </div>
+        <div class="loading-bar"></div>
+    </div>
+
+    <header>
+        <div class="logo">
+            <img src="img.logo.png" alt="ملاذ" class="header-logo">
+        </div>
+        <nav>
+            <a href="index.html">الرئيسية</a>
+            <a href="about.html">عن ملاذ</a>
+            <a href="products.html">منتجاتنا</a>
+            <a href="coffee-origins.html" class="active">أصل القهوة</a>
+            <a href="contact.html">مواقعنا</a>
+        </nav>
+        <button class="cart-btn" id="cartBtn">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+    </header>
+
+    <section class="coffee-origins bg-noise">
+        <div class="container">
+            <h2>أصل <span class="highlight">القهوة</span></h2>
+            <p class="origins-sub reveal">من حقول العالم إلى فنجانك — تعرّف على بلاد البن</p>
+
+            <!-- Quick Facts -->
+            <div class="quick-facts reveal" id="quickFacts">
+                <div class="fact active">🌍 99% من القهوة في العالم تُزرع على خط الاستواء</div>
+                <div class="fact">🇧🇷 البرازيل أكبر منتج للقهوة في العالم منذ 150 سنة</div>
+                <div class="fact">🇪🇹 إثيوبيا هي مهد القهوة — اكتُشفت هناك لأول مرة</div>
+                <div class="fact">☕ الكوپة الواحدة تحتاج 60 حبّة بن</div>
+                <div class="fact">🌱 الأرابيكا أحلى وأغلى من الروبيستا</div>
+            </div>
+
+            <!-- Filters -->
+            <div class="origins-filters reveal">
+                <div class="filter-group">
+                    <span class="filter-label">القارة:</span>
+                    <button class="filter-btn active" data-filter="continent" data-value="all">الكل</button>
+                    <button class="filter-btn" data-filter="continent" data-value="africa">🌍 أفريقيا</button>
+                    <button class="filter-btn" data-filter="continent" data-value="americas">🌎 أمريكا</button>
+                    <button class="filter-btn" data-filter="continent" data-value="asia">🌏 آسيا</button>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">النوع:</span>
+                    <button class="filter-btn active" data-filter="bean" data-value="all">الكل</button>
+                    <button class="filter-btn" data-filter="bean" data-value="arabica">أرابيكا</button>
+                    <button class="filter-btn" data-filter="bean" data-value="robusta">روبيستا</button>
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="origins-map-wrapper reveal">
+                <div class="coffee-belt-label">خط الاستواء ☀️</div>
+                <div class="coffee-belt"></div>
+                <div class="origins-map" id="originsMap">
+                    <div class="map-zoom-controls">
+                        <button class="map-zoom-btn" id="zoomIn" title="تكبير">+</button>
+                        <button class="map-zoom-btn" id="zoomReset" title="إعادة">↺</button>
+                        <button class="map-zoom-btn" id="zoomOut" title="تصغير">−</button>
+                    </div>
+                    <div class="map-zoom-area" id="mapZoomArea">
+                    <svg class="world-map-svg" viewBox="0 0 2000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background -->
+                        <rect width="2000" height="1000" fill="#1a1a2e"/>
+                        
+                        <!-- Grid -->
+                        <g stroke="rgba(212,165,116,0.06)" stroke-width="0.5">
+                            <line x1="0" y1="200" x2="2000" y2="200"/><line x1="0" y1="400" x2="2000" y2="400"/><line x1="0" y1="600" x2="2000" y2="600"/><line x1="0" y1="800" x2="2000" y2="800"/>
+                            <line x1="333" y1="0" x2="333" y2="1000"/><line x1="666" y1="0" x2="666" y2="1000"/><line x1="1000" y1="0" x2="1000" y2="1000"/><line x1="1333" y1="0" x2="1333" y2="1000"/><line x1="1666" y1="0" x2="1666" y2="1000"/>
+                        </g>
+
+                        <!-- Coffee Belt -->
+                        <rect x="0" y="333" width="2000" height="334" fill="rgba(212,165,116,0.05)"/>
+                        <line x1="0" y1="333" x2="2000" y2="333" stroke="rgba(212,165,116,0.15)" stroke-width="1.5" stroke-dasharray="12,8"/>
+                        <line x1="0" y1="667" x2="2000" y2="667" stroke="rgba(212,165,116,0.15)" stroke-width="1.5" stroke-dasharray="12,8"/>
+                        <text x="15" y="348" fill="rgba(212,165,116,0.4)" font-size="10" font-family="Arial">Tropic of Cancer</text>
+                        <text x="15" y="682" fill="rgba(212,165,116,0.4)" font-size="10" font-family="Arial">Tropic of Capricorn</text>
+
+                        <!-- NORTH AMERICA -->
+                        <g data-continent="americas">
+                        <path d="M220,130 C235,110 265,95 300,88 C340,80 380,85 415,95 C440,102 458,115 470,108 C482,100 492,95 502,102 C512,110 518,125 520,142 C522,160 518,178 508,192 C498,205 482,212 465,218 C448,224 432,235 418,248 C408,258 395,265 378,270 C362,275 345,278 328,274 C312,270 298,260 286,248 C274,236 265,222 256,212 C245,200 232,195 220,200 C208,205 198,218 192,235 C186,252 188,272 196,290 C204,308 218,322 236,330 C252,338 270,342 288,348 C305,354 318,365 325,380 C332,395 328,412 318,426 C308,440 294,448 278,450 C262,452 248,446 238,434 C228,422 222,406 220,388 C218,370 222,352 232,340 C240,328 252,322 266,320" fill="rgba(45,80,130,0.4)" stroke="rgba(100,160,220,0.6)" stroke-width="1.5"/>
+                        <path d="M120,95 C140,85 165,82 190,88 C210,92 225,105 230,122 C234,135 226,148 214,154 C200,160 186,154 174,144 C162,134 148,126 136,122 C126,118 118,108 120,95Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1"/>
+                        <path d="M540,35 C570,25 605,25 635,35 C658,42 675,60 678,82 C680,102 668,120 650,130 C632,138 612,135 596,125 C578,115 564,100 555,82 C548,65 542,50 540,35Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="580" y="85" fill="rgba(200,220,240,0.7)" font-size="12" font-family="Arial">Greenland</text>
+                        <text x="320" y="155" fill="rgba(200,220,240,0.8)" font-size="17" font-family="Arial" font-weight="bold">Canada</text>
+                        <text x="330" y="245" fill="rgba(200,220,240,0.9)" font-size="18" font-family="Arial" font-weight="bold">United States</text>
+                        <text x="260" y="385" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">Mexico</text>
+                        <path d="M318,426 C330,422 344,426 354,438 C362,448 366,462 362,478 C358,492 348,502 334,506 C320,510 306,504 298,492 C290,480 286,466 288,452 C290,438 298,428 310,424Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1"/>
+                        <path d="M400,530 C420,518 445,512 470,518 C492,524 510,538 524,558 C538,578 548,602 552,628 C555,652 550,676 540,698 C530,718 514,736 494,748 C476,758 454,764 432,762 C412,760 394,750 380,735 C364,720 355,700 352,678 C350,656 354,634 364,614 C374,594 388,580 404,568 C420,556 438,550 456,548 C472,546 486,552 498,562" fill="rgba(45,80,130,0.4)" stroke="rgba(100,160,220,0.6)" stroke-width="1.5"/>
+                        <path d="M430,810 C442,804 456,808 464,820 C468,828 466,840 458,846 C450,852 438,848 432,840 C426,832 428,820 430,810Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="460" y="650" fill="rgba(200,220,240,0.9)" font-size="19" font-family="Arial" font-weight="bold">Brazil</text>
+                        <text x="420" y="750" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">Argentina</text>
+                        <text x="380" y="530" fill="rgba(200,220,240,0.6)" font-size="14" font-family="Arial">Colombia</text>
+                        <text x="370" y="620" fill="rgba(200,220,240,0.6)" font-size="14" font-family="Arial">Peru</text>
+                        </g>
+
+                        <!-- EUROPE -->
+                        <g data-continent="europe">
+                        <path d="M900,95 C920,85 945,82 968,88 C988,94 1002,108 1010,128 C1016,145 1012,165 1000,180 C988,195 972,202 954,205 C936,208 918,204 904,192 C890,180 880,165 876,148 C872,130 878,115 890,105Z" fill="rgba(45,80,130,0.4)" stroke="rgba(100,160,220,0.6)" stroke-width="1.5"/>
+                        <path d="M868,118 C878,108 892,106 904,112 C914,118 920,130 916,142 C912,152 902,158 892,155 C882,152 874,142 872,132 C870,125 870,122 868,118Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1"/>
+                        <path d="M940,48 C952,38 970,35 986,42 C998,48 1006,62 1002,78 C998,92 986,102 972,104 C958,106 946,98 940,86 C935,75 936,58 940,48Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1"/>
+                        <path d="M815,78 C828,70 845,70 856,78 C864,85 866,98 858,106 C850,114 836,116 826,110 C818,104 812,94 812,86Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="910" y="165" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">France</text>
+                        <text x="955" y="145" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">Germany</text>
+                        <text x="940" y="190" fill="rgba(200,220,240,0.6)" font-size="13" font-family="Arial">Italy</text>
+                        <text x="888" y="178" fill="rgba(200,220,240,0.6)" font-size="13" font-family="Arial">Spain</text>
+                        </g>
+
+                        <!-- AFRICA -->
+                        <g data-continent="africa">
+                        <path d="M925,325 C948,312 978,308 1008,316 C1035,324 1056,342 1068,368 C1078,392 1082,420 1080,448 C1078,475 1068,500 1052,522 C1036,542 1014,558 988,565 C964,572 938,570 916,560 C896,550 880,534 870,514 C860,494 856,472 856,450 C856,428 862,406 874,388 C886,370 902,356 922,346 C925,340 928,332 925,325Z" fill="rgba(45,80,130,0.4)" stroke="rgba(100,160,220,0.6)" stroke-width="1.5"/>
+                        <path d="M1095,590 C1105,580 1118,578 1128,585 C1136,592 1140,606 1136,618 C1132,628 1122,636 1112,632 C1102,628 1094,618 1092,608 C1090,598 1092,592 1095,590Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="940" y="440" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">Nigeria</text>
+                        <text x="1000" y="480" fill="rgba(200,220,240,0.6)" font-size="13" font-family="Arial">DR Congo</text>
+                        <text x="1050" y="420" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">Ethiopia</text>
+                        <text x="1060" y="460" fill="rgba(200,220,240,0.6)" font-size="13" font-family="Arial">Kenya</text>
+                        <text x="1050" y="510" fill="rgba(200,220,240,0.6)" font-size="13" font-family="Arial">Tanzania</text>
+                        <text x="1035" y="455" fill="rgba(200,220,240,0.5)" font-size="12" font-family="Arial">Uganda</text>
+                        <text x="1020" y="475" fill="rgba(200,220,240,0.5)" font-size="12" font-family="Arial">Rwanda</text>
+                        <text x="980" y="580" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">South Africa</text>
+                        </g>
+
+                        <!-- MIDDLE EAST + ASIA -->
+                        <g data-continent="asia">
+                        <path d="M1080,280 C1098,270 1122,268 1145,276 C1165,284 1178,300 1182,322 C1185,342 1176,360 1162,370 C1148,380 1130,378 1116,370 C1102,362 1092,346 1088,328 C1085,310 1084,295 1080,280Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1.2"/>
+                        <path d="M1118,375 C1138,368 1160,372 1178,385 C1192,395 1200,412 1198,430 C1196,448 1184,462 1168,466 C1152,470 1136,464 1126,452 C1116,440 1110,424 1112,408 C1114,395 1116,385 1118,375Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1.2"/>
+                        <text x="1148" y="425" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">Saudi Arabia</text>
+                        <text x="1120" y="310" fill="rgba(200,220,240,0.6)" font-size="14" font-family="Arial">Iran</text>
+                        <text x="1020" y="260" fill="rgba(200,220,240,0.7)" font-size="14" font-family="Arial">Turkey</text>
+                        <text x="1140" y="460" fill="rgba(200,220,240,0.5)" font-size="13" font-family="Arial">Yemen</text>
+                        <path d="M1080,75 C1115,62 1158,58 1200,65 C1240,72 1278,88 1310,110 C1340,132 1365,160 1380,192 C1392,222 1396,255 1392,288 C1388,318 1376,346 1358,368 C1340,388 1316,402 1288,408 C1262,414 1235,410 1212,400 C1190,390 1172,374 1158,355 C1145,336 1138,314 1136,292 C1134,270 1138,248 1148,228 C1158,208 1172,192 1190,180 C1206,170 1224,164 1244,162 C1262,160 1278,166 1294,176 C1308,185 1318,198 1326,212" fill="rgba(45,80,130,0.4)" stroke="rgba(100,160,220,0.6)" stroke-width="1.5"/>
+                        <path d="M1200,395 C1220,385 1245,382 1268,392 C1288,400 1302,418 1308,440 C1312,460 1306,480 1292,496 C1278,510 1260,518 1240,515 C1222,512 1208,502 1198,488 C1188,474 1182,456 1184,438 C1186,422 1192,408 1200,395Z" fill="rgba(45,80,130,0.4)" stroke="rgba(100,160,220,0.6)" stroke-width="1.5"/>
+                        <path d="M1250,520 C1258,514 1268,516 1274,524 C1278,530 1276,542 1270,548 C1264,554 1254,552 1250,544 C1246,538 1246,528 1250,520Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="1340" y="250" fill="rgba(200,220,240,0.9)" font-size="20" font-family="Arial" font-weight="bold">China</text>
+                        <text x="1230" y="460" fill="rgba(200,220,240,0.8)" font-size="17" font-family="Arial" font-weight="bold">India</text>
+                        <text x="1350" y="175" fill="rgba(200,220,240,0.5)" font-size="13" font-family="Arial">Mongolia</text>
+                        <text x="1200" y="155" fill="rgba(200,220,240,0.5)" font-size="13" font-family="Arial">Kazakhstan</text>
+                        <path d="M1340,385 C1358,375 1382,378 1398,390 C1410,400 1418,416 1415,432 C1412,448 1400,460 1386,464 C1372,468 1358,462 1348,450 C1338,438 1334,424 1336,410 C1338,398 1340,390 1340,385Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1.2"/>
+                        <path d="M1370,355 C1382,345 1400,342 1416,350 C1428,358 1436,372 1432,388 C1428,402 1418,414 1404,418 C1392,420 1380,414 1372,402 C1365,392 1362,375 1365,362Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1"/>
+                        <text x="1355" y="420" fill="rgba(200,220,240,0.6)" font-size="13" font-family="Arial">Thailand</text>
+                        <text x="1395" y="385" fill="rgba(200,220,240,0.6)" font-size="13" font-family="Arial">Vietnam</text>
+                        <text x="1320" y="395" fill="rgba(200,220,240,0.5)" font-size="12" font-family="Arial">Myanmar</text>
+                        <path d="M1520,175 C1532,165 1548,162 1560,170 C1570,178 1576,192 1572,208 C1568,222 1556,232 1544,230 C1532,228 1522,218 1518,206 C1515,195 1516,185 1520,175Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1.2"/>
+                        <path d="M1532,148 C1542,140 1555,140 1564,148 C1570,155 1570,168 1564,175 C1558,182 1546,180 1540,172 C1534,165 1530,155 1532,148Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="1545" y="200" fill="rgba(200,220,240,0.8)" font-size="16" font-family="Arial" font-weight="bold">Japan</text>
+                        <path d="M1470,195 C1480,188 1492,188 1500,195 C1506,202 1508,215 1504,225 C1500,234 1490,240 1482,238 C1472,235 1466,226 1465,218 C1464,210 1466,202 1470,195Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="1478" y="218" fill="rgba(200,220,240,0.6)" font-size="12" font-family="Arial">S. Korea</text>
+                        <path d="M1400,540 C1425,530 1455,528 1482,538 C1505,546 1520,564 1522,585 C1524,605 1514,625 1498,636 C1482,646 1462,650 1442,644 C1422,638 1408,624 1402,606 C1396,588 1394,568 1400,540Z" fill="rgba(45,80,130,0.35)" stroke="rgba(100,160,220,0.5)" stroke-width="1.2"/>
+                        <path d="M1445,480 C1460,472 1478,472 1490,480 C1500,488 1504,502 1498,515 C1492,526 1478,532 1466,530 C1454,528 1444,518 1440,508 C1438,498 1440,488 1445,480Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <path d="M1360,525 C1372,515 1390,512 1406,520 C1418,528 1426,542 1422,558 C1418,572 1406,582 1394,585 C1382,588 1370,580 1362,570 C1355,560 1352,545 1355,535Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <path d="M1410,598 C1425,590 1445,590 1462,598 C1475,604 1482,616 1478,628 C1474,640 1462,648 1448,646 C1435,644 1424,638 1418,628 C1412,620 1410,610 1410,602Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <path d="M1545,535 C1562,525 1585,525 1602,535 C1615,544 1620,560 1615,578 C1610,594 1596,604 1580,602 C1565,600 1552,590 1546,575 C1540,562 1540,548 1545,535Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <path d="M1485,385 C1495,375 1508,375 1518,382 C1525,390 1528,402 1524,415 C1520,426 1510,434 1500,432 C1490,430 1482,422 1480,412 C1478,402 1480,392 1485,385Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="1450" y="590" fill="rgba(200,220,240,0.7)" font-size="15" font-family="Arial" font-weight="bold">Indonesia</text>
+                        <text x="1495" y="408" fill="rgba(200,220,240,0.5)" font-size="12" font-family="Arial">Philippines</text>
+                        <text x="1150" y="100" fill="rgba(200,220,240,0.6)" font-size="16" font-family="Arial">Russia</text>
+                        </g>
+
+                        <!-- OCEANIA -->
+                        <g data-continent="oceania">
+                        <path d="M1500,650 C1535,635 1578,628 1620,635 C1658,642 1690,660 1712,688 C1732,714 1740,745 1738,778 C1736,808 1724,835 1704,855 C1684,874 1658,886 1630,890 C1604,894 1578,890 1554,878 C1532,868 1514,850 1502,828 C1490,806 1486,780 1488,755 C1490,732 1498,710 1510,692 C1522,675 1538,662 1556,656" fill="rgba(45,80,130,0.4)" stroke="rgba(100,160,220,0.6)" stroke-width="1.5"/>
+                        <path d="M1635,875 C1645,868 1658,870 1666,878 C1672,885 1672,898 1665,905 C1658,912 1646,910 1640,902 C1635,895 1634,885 1635,875Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <path d="M1770,790 C1782,780 1798,778 1810,785 C1820,792 1825,806 1820,818 C1816,828 1804,836 1792,834 C1782,832 1774,824 1772,814 C1770,805 1770,798 1770,790Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <path d="M1788,840 C1798,834 1810,836 1818,844 C1824,852 1824,864 1818,870 C1810,876 1800,874 1794,866 C1788,860 1786,850 1788,840Z" fill="rgba(45,80,130,0.3)" stroke="rgba(100,160,220,0.45)" stroke-width="1"/>
+                        <text x="1610" y="770" fill="rgba(200,220,240,0.8)" font-size="18" font-family="Arial" font-weight="bold">Australia</text>
+                        <text x="1795" y="830" fill="rgba(200,220,240,0.5)" font-size="13" font-family="Arial">New Zealand</text>
+                        </g>
+
+                        <!-- Coffee producing countries - Bean Pins -->
+                        <g class="coffee-beans">
+                            <!-- Brazil -->
+                            <g class="bean-pin" data-continent="americas" data-bean="both" transform="translate(455,610)">
+                                <ellipse cx="0" cy="0" rx="12" ry="8" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-7 Q-2,0 0,7" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="455,610;455,606;455,610" dur="2s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Colombia -->
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(380,540)">
+                                <ellipse cx="0" cy="0" rx="10" ry="7" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-6 Q-2,0 0,6" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="380,540;380,536;380,540" dur="2.2s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Ethiopia -->
+                            <g class="bean-pin" data-continent="africa" data-bean="arabica" transform="translate(1050,425)">
+                                <ellipse cx="0" cy="0" rx="10" ry="7" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-6 Q-2,0 0,6" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1050,425;1050,421;1050,425" dur="2.4s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Kenya -->
+                            <g class="bean-pin" data-continent="africa" data-bean="arabica" transform="translate(1060,460)">
+                                <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1060,460;1060,456;1060,460" dur="2.6s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Vietnam -->
+                            <g class="bean-pin" data-continent="asia" data-bean="robusta" transform="translate(1395,375)">
+                                <ellipse cx="0" cy="0" rx="10" ry="7" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-6 Q-2,0 0,6" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1395,375;1395,371;1395,375" dur="2.3s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Indonesia -->
+                            <g class="bean-pin" data-continent="asia" data-bean="both" transform="translate(1445,565)">
+                                <ellipse cx="0" cy="0" rx="10" ry="7" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-6 Q-2,0 0,6" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1445,565;1445,561;1445,565" dur="2.5s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- India -->
+                            <g class="bean-pin" data-continent="asia" data-bean="both" transform="translate(1235,435)">
+                                <ellipse cx="0" cy="0" rx="9" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1235,435;1235,431;1235,435" dur="2.7s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Guatemala -->
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(305,455)">
+                                <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="305,455;305,451;305,455" dur="2.8s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Mexico -->
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(265,395)">
+                                <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="265,395;265,391;265,395" dur="2.9s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Peru -->
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(370,605)">
+                                <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="370,605;370,601;370,605" dur="3s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Honduras -->
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(320,440)">
+                                <ellipse cx="0" cy="0" rx="7" ry="5" fill="#6b3a1f" stroke="#d4a574" stroke-width="0.8"/>
+                                <path d="M0,-4 Q-2,0 0,4" stroke="#d4a574" stroke-width="0.6" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="320,440;320,437;320,440" dur="3.1s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Uganda -->
+                            <g class="bean-pin" data-continent="africa" data-bean="robusta" transform="translate(1035,455)">
+                                <ellipse cx="0" cy="0" rx="7" ry="5" fill="#6b3a1f" stroke="#d4a574" stroke-width="0.8"/>
+                                <path d="M0,-4 Q-2,0 0,4" stroke="#d4a574" stroke-width="0.6" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1035,455;1035,452;1035,455" dur="3.2s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Tanzania -->
+                            <g class="bean-pin" data-continent="africa" data-bean="arabica" transform="translate(1050,500)">
+                                <ellipse cx="0" cy="0" rx="7" ry="5" fill="#6b3a1f" stroke="#d4a574" stroke-width="0.8"/>
+                                <path d="M0,-4 Q-2,0 0,4" stroke="#d4a574" stroke-width="0.6" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1050,500;1050,497;1050,500" dur="3.3s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Rwanda -->
+                            <g class="bean-pin" data-continent="africa" data-bean="arabica" transform="translate(1020,473)">
+                                <ellipse cx="0" cy="0" rx="6" ry="4.5" fill="#6b3a1f" stroke="#d4a574" stroke-width="0.8"/>
+                                <path d="M0,-3.5 Q-2,0 0,3.5" stroke="#d4a574" stroke-width="0.6" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1020,473;1020,470;1020,473" dur="3.4s" repeatCount="indefinite"/>
+                            </g>
+                            <!-- Yemen -->
+                            <g class="bean-pin" data-continent="asia" data-bean="arabica" transform="translate(1140,445)">
+                                <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
+                                <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
+                                <animateTransform attributeName="transform" type="translate" values="1140,445;1140,441;1140,445" dur="2.1s" repeatCount="indefinite"/>
+                            </g>
+                        </g>
+                    </svg>
+                    <!-- Pins inserted by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Production Ranking -->
+            <div class="production-ranking reveal">
+                <h3>أكبر 10 منتجين للقهوة في العالم</h3>
+                <div class="ranking-bars" id="rankingBars">
+                    <!-- Inserted by JS -->
+                </div>
+            </div>
+
+            <!-- Coffee Journey -->
+            <div class="coffee-journey reveal">
+                <h3>رحلة القهوة ☕</h3>
+                <div class="journey-steps">
+                    <div class="journey-step">
+                        <div class="step-icon">🌱</div>
+                        <h4>الزراعة</h4>
+                        <p>تُزرع حبوب البن على ارتفاع 800-2000 متر فوق سطح البحر</p>
+                    </div>
+                    <div class="journey-arrow">→</div>
+                    <div class="journey-step">
+                        <div class="step-icon">🫘</div>
+                        <h4>الحصاد</h4>
+                        <p>تُجمع الحبوب يدوياً أو آلياً عندما تنضج تماماً</p>
+                    </div>
+                    <div class="journey-arrow">→</div>
+                    <div class="journey-step">
+                        <div class="step-icon">🔥</div>
+                        <h4>التحميص</h4>
+                        <p>تُحمّص الحبوب بعناية للحصول على النكهة المثالية</p>
+                    </div>
+                    <div class="journey-arrow">→</div>
+                    <div class="journey-step">
+                        <div class="step-icon">⚙️</div>
+                        <h4>الطحن</h4>
+                        <p>يُطحن البن حسب طريقة التحضير المطلوبة</p>
+                    </div>
+                    <div class="journey-arrow">→</div>
+                    <div class="journey-step">
+                        <div class="step-icon">☕</div>
+                        <h4>التحضير</h4>
+                        <p>يُحضّر لك فنجانك المفضل بحب وعناية</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Modal -->
+    <div class="cart-overlay" id="cartOverlay">
+        <div class="cart-modal">
+            <div class="cart-modal-header">
+                <h3>🛒 سلة المشتريات</h3>
+                <button class="cart-close" id="cartClose">✕</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <p class="cart-empty">السلة فاضية — أضف منتجات أولاً</p>
+            </div>
+            <div class="cart-footer" id="cartFooter" style="display:none;">
+                <div class="cart-total">
+                    <span>المجموع:</span>
+                    <span id="cartTotal">0 جنيه</span>
+                </div>
+                <button class="cart-whatsapp-btn" id="cartWhatsapp">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.291 ( Layer the <parameter=18.215 11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    أرسل الطلب على واتساب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <p>&copy; 2026 <strong>مَلَاذ</strong> Malaz. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

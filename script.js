@@ -1,9 +1,51 @@
 (function () {
     'use strict';
 
-    // --- Loading screen ---
+    // --- Loading screen with particles + typewriter ---
     const loader = document.querySelector('.loading-screen');
-    if (loader) setTimeout(() => loader.classList.add('hide'), 2200);
+    if (loader) {
+        // Create particles
+        const particlesContainer = document.getElementById('loadingParticles');
+        if (particlesContainer) {
+            for (let i = 0; i < 12; i++) {
+                const p = document.createElement('div');
+                p.className = 'loading-particle';
+                p.style.animationDelay = (i * 0.25) + 's';
+                p.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
+                particlesContainer.appendChild(p);
+            }
+        }
+
+        // Typewriter effect — type both names simultaneously
+        const twArabic = document.getElementById('twArabic');
+        const twEnglish = document.getElementById('twEnglish');
+        if (twArabic && twEnglish) {
+            const arabic = 'مَلَاذ';
+            const english = 'Malaz';
+            let aIdx = 0, eIdx = 0;
+
+            function typeArabic() {
+                if (aIdx <= arabic.length) {
+                    twArabic.textContent = arabic.substring(0, aIdx);
+                    aIdx++;
+                    setTimeout(typeArabic, 120);
+                }
+            }
+
+            function typeEnglish() {
+                if (eIdx <= english.length) {
+                    twEnglish.textContent = english.substring(0, eIdx);
+                    eIdx++;
+                    setTimeout(typeEnglish, 120);
+                }
+            }
+
+            setTimeout(typeArabic, 400);
+            setTimeout(typeEnglish, 400);
+        }
+
+        setTimeout(() => loader.classList.add('hide'), 3200);
+    }
 
     // --- Coffee grains background ---
     const grainsContainer = document.body;
@@ -439,4 +481,130 @@
     const isEvening = now.getHours() >= 14;
     const quoteIndex = ((dayOfYear * 2) + (isEvening ? 1 : 0)) % quotes.length;
     el.textContent = quotes[quoteIndex];
+})();
+
+// --- Coffee Origins Map ---
+(function () {
+    const map = document.getElementById('originsMap');
+    if (!map) return;
+
+    // Zoom controls
+    const zoomArea = document.getElementById('mapZoomArea');
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const zoomResetBtn = document.getElementById('zoomReset');
+    let zoomLevel = 1;
+
+    if (zoomArea && zoomInBtn && zoomOutBtn && zoomResetBtn) {
+        function setZoom(level) {
+            zoomLevel = Math.min(3, Math.max(0.5, level));
+            zoomArea.style.transform = `scale(${zoomLevel})`;
+        }
+        zoomInBtn.addEventListener('click', () => setZoom(zoomLevel + 0.25));
+        zoomOutBtn.addEventListener('click', () => setZoom(zoomLevel - 0.25));
+        zoomResetBtn.addEventListener('click', () => setZoom(1));
+    }
+
+    // Filters
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const group = btn.dataset.filter;
+            const value = btn.dataset.value;
+            document.querySelectorAll(`.filter-btn[data-filter="${group}"]`).forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            applyFilters();
+        });
+    });
+
+    function applyFilters() {
+        const continent = document.querySelector('.filter-btn[data-filter="continent"].active')?.dataset.value || 'all';
+        const bean = document.querySelector('.filter-btn[data-filter="bean"].active')?.dataset.value || 'all';
+
+        // Filter bean pins
+        document.querySelectorAll('.bean-pin').forEach(pin => {
+            const pinContinent = pin.dataset.continent;
+            const pinBean = pin.dataset.bean;
+            const matchContinent = continent === 'all' || pinContinent === continent;
+            const matchBean = bean === 'all' || pinBean === bean || pinBean === 'both';
+            pin.style.opacity = (matchContinent && matchBean) ? '1' : '0.1';
+            pin.style.transition = 'opacity 0.4s ease';
+        });
+
+        // Filter continent groups (these are sibling <g> elements, not parents of bean-pins)
+        const beanPins = document.querySelectorAll('.bean-pin');
+        document.querySelectorAll('g[data-continent]').forEach(group => {
+            if (group.classList.contains('bean-pin')) return;
+            const groupContinent = group.dataset.continent;
+
+            // Continent filter: dim non-matching continent groups
+            const matchContinent = continent === 'all' || groupContinent === continent;
+
+            // Bean filter: dim continent group if it has no matching bean pins
+            let matchBean = true;
+            if (bean !== 'all') {
+                const hasMatchingPin = Array.from(beanPins).some(pin => {
+                    const pc = pin.dataset.continent;
+                    const pb = pin.dataset.bean;
+                    return pc === groupContinent && (pb === bean || pb === 'both');
+                });
+                matchBean = hasMatchingPin;
+            }
+
+            group.style.opacity = (matchContinent && matchBean) ? '1' : '0.12';
+            group.style.transition = 'opacity 0.4s ease';
+        });
+    }
+
+    // Quick Facts rotation
+    const facts = document.querySelectorAll('.quick-facts .fact');
+    if (facts.length > 0) {
+        let factIdx = 0;
+        setInterval(() => {
+            facts[factIdx].classList.remove('active');
+            factIdx = (factIdx + 1) % facts.length;
+            facts[factIdx].classList.add('active');
+        }, 3500);
+    }
+
+    // Production Ranking bars
+    const rankingContainer = document.getElementById('rankingBars');
+    if (rankingContainer) {
+        const countries = [
+            { name: 'البرازيل', flag: '🇧🇷', rank: 1, production: '3.7M طن' },
+            { name: 'فيتنام', flag: '🇻🇳', rank: 2, production: '1.8M طن' },
+            { name: 'كولومبيا', flag: '🇨🇴', rank: 3, production: '800K طن' },
+            { name: 'إندونيسيا', flag: '🇮🇩', rank: 4, production: '700K طن' },
+            { name: 'إثيوبيا', flag: '🇪🇹', rank: 5, production: '600K طن' },
+            { name: 'هندوراس', flag: '🇭🇳', rank: 6, production: '400K طن' },
+            { name: 'الهند', flag: '🇮🇳', rank: 7, production: '350K طن' },
+            { name: 'أوغندا', flag: '🇺🇬', rank: 8, production: '300K طن' },
+            { name: 'المكسيك', flag: '🇲🇽', rank: 9, production: '250K طن' },
+            { name: 'بيرو', flag: '🇵🇪', rank: 10, production: '200K طن' },
+        ];
+        const maxProd = 3700;
+        countries.forEach(c => {
+            const val = parseInt(c.production.replace(/[^0-9]/g, ''));
+            const pct = Math.round((val / maxProd) * 100);
+            rankingContainer.innerHTML += `
+                <div class="ranking-row">
+                    <span class="rank-num">#${c.rank}</span>
+                    <span class="rank-flag">${c.flag}</span>
+                    <span class="rank-name">${c.name}</span>
+                    <div class="ranking-bar-bg"><div class="ranking-bar-fill" data-width="${pct}"></div></div>
+                    <span class="rank-val">${c.production}</span>
+                </div>`;
+        });
+        // Animate bars on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.ranking-bar-fill').forEach(bar => {
+                        bar.style.width = bar.dataset.width + '%';
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+        observer.observe(rankingContainer);
+    }
 })();

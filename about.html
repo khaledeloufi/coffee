@@ -8,9 +8,17 @@
 </head>
 <body>
     <div class="loading-screen">
+        <div class="loading-particles" id="loadingParticles"></div>
+        <div class="loading-steam">
+            <div class="steam-line s1"></div>
+            <div class="steam-line s2"></div>
+            <div class="steam-line s3"></div>
+        </div>
         <div class="loading-cup"><svg viewBox="0 0 100 100" class="loading-cup-svg" width="64" height="64"><ellipse cx="50" cy="76" rx="34" ry="8" fill="#d4a574" opacity="0.25"/><path d="M30 44 Q30 74 50 74 Q70 74 70 44Z" fill="url(#lcg)"/><ellipse cx="50" cy="44" rx="20" ry="7" fill="#faf6f0" stroke="#d4a574" stroke-width="0.8"/><ellipse cx="50" cy="47" rx="17" ry="5" fill="#6b3a1f"/><path d="M70 49 Q86 49 86 60 Q86 70 70 68" stroke="#f5f0eb" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M43 34 Q39 25 44 18" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.35" stroke-linecap="round"/><path d="M50 32 Q47 23 52 15" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.25" stroke-linecap="round"/><path d="M57 34 Q53 25 58 18" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.35" stroke-linecap="round"/><defs><linearGradient id="lcg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#faf6f0"/><stop offset="100%" stop-color="#e8ddd0"/></linearGradient></defs></svg></div>
-        <div class="loading-logo-arabic">مَلَاذ</div>
-        <div class="loading-logo-english">Malaz</div>
+        <div class="loading-typewriter">
+            <span class="tw-line" id="twArabic"></span>
+            <span class="tw-line tw-english" id="twEnglish"></span>
+        </div>
         <div class="loading-bar"></div>
     </div>
 
@@ -22,6 +30,7 @@
             <a href="index.html">الرئيسية</a>
             <a href="about.html" class="active">عن ملاذ</a>
             <a href="products.html">منتجاتنا</a>
+            <a href="coffee-origins.html">أصل القهوة</a>
             <a href="contact.html">مواقعنا</a>
         </nav>
         <button class="cart-btn" id="cartBtn">
