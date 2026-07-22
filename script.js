@@ -496,13 +496,72 @@
     let zoomLevel = 1;
 
     if (zoomArea && zoomInBtn && zoomOutBtn && zoomResetBtn) {
+        let panX = 0, panY = 0;
+        let isDragging = false;
+        let startX, startY;
+        let startPanX, startPanY;
+
+        function applyTransform() {
+            zoomArea.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+        }
+
         function setZoom(level) {
             zoomLevel = Math.min(3, Math.max(0.5, level));
-            zoomArea.style.transform = `scale(${zoomLevel})`;
+            if (zoomLevel <= 1) { panX = 0; panY = 0; }
+            applyTransform();
         }
+
+        function clampPan() {
+            const maxPan = (zoomLevel - 1) * 200;
+            panX = Math.max(-maxPan, Math.min(maxPan, panX));
+            panY = Math.max(-maxPan, Math.min(maxPan, panY));
+        }
+
         zoomInBtn.addEventListener('click', () => setZoom(zoomLevel + 0.25));
         zoomOutBtn.addEventListener('click', () => setZoom(zoomLevel - 0.25));
-        zoomResetBtn.addEventListener('click', () => setZoom(1));
+        zoomResetBtn.addEventListener('click', () => { panX = 0; panY = 0; setZoom(1); });
+
+        // Mouse drag
+        zoomArea.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startPanX = panX;
+            startPanY = panY;
+            zoomArea.classList.add('dragging');
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            panX = startPanX + (e.clientX - startX);
+            panY = startPanY + (e.clientY - startY);
+            clampPan();
+            applyTransform();
+        });
+        document.addEventListener('mouseup', () => {
+            if (isDragging) { isDragging = false; zoomArea.classList.remove('dragging'); }
+        });
+
+        // Touch drag
+        zoomArea.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1) return;
+            isDragging = true;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            startPanX = panX;
+            startPanY = panY;
+            zoomArea.classList.add('dragging');
+        }, { passive: true });
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            panX = startPanX + (e.touches[0].clientX - startX);
+            panY = startPanY + (e.touches[0].clientY - startY);
+            clampPan();
+            applyTransform();
+        }, { passive: true });
+        document.addEventListener('touchend', () => {
+            if (isDragging) { isDragging = false; zoomArea.classList.remove('dragging'); }
+        });
     }
 
     // Filters
