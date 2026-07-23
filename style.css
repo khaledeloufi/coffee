@@ -2381,6 +2381,44 @@ footer {
     align-items: flex-start;
     justify-content: center;
     gap: 0;
+}
+.journey-step {
+    max-width: 150px;
+    text-align: center;
+    padding: 16px 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212,165,116,0.12);
+    border-radius: 12px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.journey-step:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212,165,116,0.3);
+}
+.step-icon {
+    font-size: 2em;
+    margin-bottom: 8px;
+    transition: transform 0.3s ease;
+}
+.journey-step:hover .step-icon {
+    transform: scale(1.15);
+}
+.journey-step h4 { font-size: 0.9em; margin-bottom: 4px; color: #d4a574; }
+.journey-step p { font-size: 0.75em; color: rgba(250,246,240,0.6); line-height: 1.5; }
+.journey-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(212,165,116,0.3);
+    font-size: 1.2em;
+    padding-top: 30px;
+}
+.coffee-journey h3 { font-size: 1.3em; margin-bottom: 24px; color: #d4a574; text-align: center; }
+.journey-steps {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
     flex-wrap: wrap;
 }
 .journey-step {
