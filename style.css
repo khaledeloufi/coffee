@@ -2298,41 +2298,77 @@ footer {
 .production-ranking {
     margin-top: 50px;
     margin-bottom: 50px;
+    position: relative;
+    z-index: 2;
 }
-.production-ranking h3 { font-size: 1.3em; margin-bottom: 20px; color: #d4a574; }
-.ranking-bars { display: flex; flex-direction: column; gap: 10px; }
-.ranking-row {
+.production-ranking h3 { font-size: 1.3em; margin-bottom: 28px; color: #d4a574; }
+.ranking-bars {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+}
+.rank-ring {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 12px;
+    animation: ringIn 0.6s ease both;
+    width: var(--ring-size, 130px);
 }
-.ranking-row .rank-num {
-    font-weight: 700;
-    color: #d4a574;
-    min-width: 24px;
-    font-size: 0.9em;
+@keyframes ringIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
 }
-.ranking-row .rank-flag { font-size: 1.2em; }
-.ranking-row .rank-name { min-width: 80px; font-size: 0.85em; }
-.ranking-bar-bg {
-    flex: 1;
-    height: 24px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 12px;
+.rank-ring-svg {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+}
+.rank-ring-svg svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+.ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 4;
+}
+.ring-fill {
+    fill: none;
+    stroke: url(#ringGrad);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.rank-ring-flag {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
     overflow: hidden;
 }
-.ranking-bar-fill {
+.rank-ring-flag img {
+    width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, #6b3a1f, #d4a574);
-    border-radius: 12px;
-    transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
-    width: 0;
+    object-fit: cover;
 }
-.ranking-row .rank-val {
-    font-size: 0.8em;
-    color: rgba(250,246,240,0.6);
-    min-width: 70px;
-    text-align: left;
+.rank-ring .ring-bg { stroke: rgba(255,255,255,0.12); stroke-width: 3.5; }
+.rank-ring .ring-fill { stroke-width: 3.5; }
+.rank-ring-name {
+    margin-top: 10px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #faf6f0;
+    text-align: center;
+}
+.rank-ring-prod {
+    margin-top: 3px;
+    font-size: 0.72em;
+    color: rgba(250,246,240,0.5);
 }
 
 /* Coffee Journey */
@@ -2399,7 +2435,8 @@ footer {
     .journey-arrow { display: none; }
     .journey-steps { gap: 15px; }
     .journey-step { max-width: 100px; }
-    .ranking-row .rank-name { min-width: 60px; font-size: 0.75em; }
+    .ranking-bars { gap: 16px; }
+    .rank-ring { --ring-size: 100px !important; }
     .origins-filters { gap: 10px; }
     .filter-btn { padding: 5px 12px; font-size: 0.8em; }
 }

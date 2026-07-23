@@ -626,44 +626,54 @@
         }, 3500);
     }
 
-    // Production Ranking bars
+    // Production Ranking — circular rings
     const rankingContainer = document.getElementById('rankingBars');
     if (rankingContainer) {
         const countries = [
-            { name: 'البرازيل', flag: '🇧🇷', rank: 1, production: '3.7M طن' },
-            { name: 'فيتنام', flag: '🇻🇳', rank: 2, production: '1.8M طن' },
-            { name: 'كولومبيا', flag: '🇨🇴', rank: 3, production: '800K طن' },
-            { name: 'إندونيسيا', flag: '🇮🇩', rank: 4, production: '700K طن' },
-            { name: 'إثيوبيا', flag: '🇪🇹', rank: 5, production: '600K طن' },
-            { name: 'هندوراس', flag: '🇭🇳', rank: 6, production: '400K طن' },
-            { name: 'الهند', flag: '🇮🇳', rank: 7, production: '350K طن' },
-            { name: 'أوغندا', flag: '🇺🇬', rank: 8, production: '300K طن' },
-            { name: 'المكسيك', flag: '🇲🇽', rank: 9, production: '250K طن' },
-            { name: 'بيرو', flag: '🇵🇪', rank: 10, production: '200K طن' },
+            { name: 'البرازيل', code: 'br', rank: 1, production: '3.7M طن', pct: 100 },
+            { name: 'فيتنام', code: 'vn', rank: 2, production: '1.8M طن', pct: 49 },
+            { name: 'كولومبيا', code: 'co', rank: 3, production: '800K طن', pct: 22 },
+            { name: 'إندونيسيا', code: 'id', rank: 4, production: '700K طن', pct: 19 },
+            { name: 'إثيوبيا', code: 'et', rank: 5, production: '600K طن', pct: 16 },
+            { name: 'هندوراس', code: 'hn', rank: 6, production: '400K طن', pct: 11 },
+            { name: 'الهند', code: 'in', rank: 7, production: '350K طن', pct: 9 },
+            { name: 'أوغندا', code: 'ug', rank: 8, production: '300K طن', pct: 8 },
+            { name: 'المكسيك', code: 'mx', rank: 9, production: '250K طن', pct: 7 },
+            { name: 'بيرو', code: 'pe', rank: 10, production: '200K طن', pct: 5 },
         ];
-        const maxProd = 3700;
-        countries.forEach(c => {
-            const val = parseInt(c.production.replace(/[^0-9]/g, ''));
-            const pct = Math.round((val / maxProd) * 100);
-            rankingContainer.innerHTML += `
-                <div class="ranking-row">
-                    <span class="rank-num">#${c.rank}</span>
-                    <span class="rank-flag">${c.flag}</span>
-                    <span class="rank-name">${c.name}</span>
-                    <div class="ranking-bar-bg"><div class="ranking-bar-fill" data-width="${pct}"></div></div>
-                    <span class="rank-val">${c.production}</span>
-                </div>`;
-        });
-        // Animate bars on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.querySelectorAll('.ranking-bar-fill').forEach(bar => {
-                        bar.style.width = bar.dataset.width + '%';
+        const r = 42, circ = 2 * Math.PI * r;
+        rankingContainer.innerHTML = countries.map((c, i) => {
+            const offset = circ - (c.pct / 100) * circ;
+            const size = c.rank <= 3 ? 140 : c.rank <= 6 ? 120 : 105;
+            return `
+            <div class="rank-ring" style="animation-delay: ${i * 0.1}s; --ring-size: ${size}px">
+                <div class="rank-ring-svg">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="${r}"/>
+                        <circle class="ring-fill" cx="50" cy="50" r="${r}"
+                            stroke-dasharray="${circ}"
+                            stroke-dashoffset="${circ}"
+                            data-offset="${offset}"/>
+                    </svg>
+                    <div class="rank-ring-flag">
+                        <img src="https://flagcdn.com/w160/${c.code}.png" alt="${c.name}">
+                    </div>
+                </div>
+                <div class="rank-ring-name">${c.name}</div>
+                <div class="rank-ring-prod">${c.production}</div>
+            </div>`;
+        }).join('');
+
+        // Animate rings on scroll
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.querySelectorAll('.ring-fill').forEach(ring => {
+                        ring.style.strokeDashoffset = ring.dataset.offset;
                     });
                 }
             });
-        }, { threshold: 0.3 });
-        observer.observe(rankingContainer);
+        }, { threshold: 0.25 });
+        obs.observe(rankingContainer);
     }
 })();
