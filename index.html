@@ -22,24 +22,64 @@
         <div class="loading-bar"></div>
     </div>
 
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Section Indicator -->
+    <div class="section-indicator" id="sectionIndicator">
+        <a href="#hero0" class="si-dot active" data-section="0" title="الرئيسية"></a>
+        <a href="#about1" class="si-dot" data-section="1" title="عن ملاذ"></a>
+        <a href="#products2" class="si-dot" data-section="2" title="منتجاتنا"></a>
+        <a href="#journey3" class="si-dot" data-section="3" title="رحلة القهوة"></a>
+        <a href="#social4" class="si-dot" data-section="4" title="مواقعنا"></a>
+    </div>
+
     <header>
-        <div class="logo">
-            <img src="img.logo.png" alt="ملاذ" class="header-logo">
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
-        <nav>
-            <a href="index.html" class="active">الرئيسية</a>
-            <a href="about.html">عن ملاذ</a>
-            <a href="products.html">منتجاتنا</a>
-            <a href="coffee-origins.html">أصل القهوة</a>
-            <a href="contact.html">مواقعنا</a>
-        </nav>
-        <button class="cart-btn" id="cartBtn">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-            <span class="cart-badge" id="cartBadge">0</span>
-        </button>
     </header>
 
-    <section class="hero bg-noise">
+    <!-- Full Screen Menu -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-bg"></div>
+        <nav class="menu-nav">
+            <a href="index.html" class="menu-link active">
+                <span class="ml-num">01</span>
+                <span class="ml-text">الرئيسية</span>
+                <span class="ml-line"></span>
+            </a>
+            <a href="products.html" class="menu-link">
+                <span class="ml-num">02</span>
+                <span class="ml-text">منتجاتنا</span>
+                <span class="ml-line"></span>
+            </a>
+            <a href="coffee-origins.html" class="menu-link">
+                <span class="ml-num">03</span>
+                <span class="ml-text">أصل القهوة</span>
+                <span class="ml-line"></span>
+            </a>
+            <a href="contact.html" class="menu-link">
+                <span class="ml-num">04</span>
+                <span class="ml-text">مواقعنا</span>
+                <span class="ml-line"></span>
+            </a>
+        </nav>
+        <div class="menu-footer">
+            <p>مَلَاذ — أجود حبوب البن في مصر</p>
+        </div>
+    </div>
+
+    <!-- Floating Cart Button -->
+    <button class="floating-cart" id="cartBtn">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+
+    <!-- SECTION 0: Hero -->
+    <section class="cinema-section hero-section" id="hero0" data-section="0">
         <video class="hero-video" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1514432324607-a09d9b4aefda?w=600">
             <source src="https://res.cloudinary.com/xejd9zjy/video/upload/v1783609998/12450204_1280_720_30fps_n5fil6.mp4" type="video/mp4">
         </video>
@@ -52,9 +92,199 @@
         </div>
         <div class="hero-content">
             <p class="hero-greeting" id="heroGreeting"></p>
-            <h2 class="hero-arabic">مَلَاذ</h2>
-            <p class="hero-sub">حيث تلتقي النكهة بالأصالة</p>
+            <h2 class="hero-arabic cinema-title" data-speed="0.3">مَلَاذ</h2>
+            <p class="hero-sub cinema-subtitle" data-speed="0.5">حيث تلتقي النكهة بالأصالة</p>
             <p class="hero-dotd" id="heroDotd"></p>
+        </div>
+        <div class="scroll-hint">
+            <span>اسحب للأسفل</span>
+            <div class="scroll-hint-arrow"></div>
+        </div>
+    </section>
+
+    <!-- SECTION 1: About -->
+    <section class="cinema-section about-cinema" id="about1" data-section="1">
+        <div class="cinema-bg-layer">
+            <div class="cinema-particles"></div>
+        </div>
+        <div class="cinema-content">
+            <div class="cinema-label">عن مَلَاذ</div>
+            <h2 class="cinema-heading scroll-reveal">
+                <span class="cinema-line">أصالة</span>
+                <span class="cinema-line accent">القهوة العربية</span>
+            </h2>
+            <p class="cinema-body scroll-reveal" data-delay="0.2">
+                مَلَاذ هو براند قهوة يجمع بين أصالة البن العربي ولمسة العصرية. نقدم لكم تجربة قهوة فريدة من نوعها، محضرة بأفضل حبوب البن من جميع أنحاء العالم.
+            </p>
+            <div class="brand-features scroll-reveal" data-delay="0.3">
+                <div class="bf-item">
+                    <div class="bf-icon">🚀</div>
+                    <div class="bf-text">
+                        <h4>شحن سريع</h4>
+                        <p>توصيل لباب بيتك في أسرع وقت</p>
+                    </div>
+                </div>
+                <div class="bf-item">
+                    <div class="bf-icon">🫘</div>
+                    <div class="bf-text">
+                        <h4>بن طازج</h4>
+                        <p>محمّص كل يوم عشان يوصلك بأجود حال</p>
+                    </div>
+                </div>
+                <div class="bf-item">
+                    <div class="bf-icon">☕</div>
+                    <div class="bf-text">
+                        <h4>جودة مضمونة</h4>
+                        <p>بن مختار بعناية من أفضل المزارع</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-divider">
+            <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+                <path d="M0,30 Q300,0 600,30 Q900,60 1200,30" stroke="rgba(212,165,116,0.15)" stroke-width="1.5" fill="none"/>
+                <circle cx="600" cy="30" r="4" fill="rgba(212,165,116,0.3)"/>
+                <circle cx="570" cy="28" r="2" fill="rgba(212,165,116,0.2)"/>
+                <circle cx="630" cy="32" r="2" fill="rgba(212,165,116,0.2)"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- SECTION 2: Products -->
+    <section class="cinema-section products-cinema" id="products2" data-section="2">
+        <div class="cinema-bg-layer">
+            <div class="cinema-gradient"></div>
+        </div>
+        <div class="cinema-content">
+            <div class="cinema-label">منتجاتنا</div>
+            <h2 class="cinema-heading scroll-reveal">
+                <span class="cinema-line">مزيج فاخر</span>
+                <span class="cinema-line accent">من أجود الحبوب</span>
+            </h2>
+            <div class="products-grid scroll-reveal" data-delay="0.2">
+                <div class="product-card-cinema">
+                    <div class="pcc-visual">
+                        <img src="img.logo.png" alt="القهوة التركي السادة" class="pcc-logo">
+                        <div class="pcc-glow"></div>
+                    </div>
+                    <div class="pcc-info">
+                        <h3>القهوة التركي السادة</h3>
+                        <p class="pcc-tagline">نقاء المذاق، أصالة التحضير</p>
+                        <p class="pcc-desc">مزيج فاخر من أجود حبوب البن الكولومبي الأرابيكا والهندي الروبيستا، محمص بعناية.</p>
+                        <div class="pcc-ingredients">
+                            <span class="pcc-ing">بن كولومبي أرابيكا</span>
+                            <span class="pcc-ing">بن هندي روبيستا</span>
+                        </div>
+                        <a href="products.html" class="pcc-btn">اكتشف المنتج</a>
+                    </div>
+                </div>
+                <div class="product-card-cinema">
+                    <div class="pcc-visual">
+                        <img src="img.logo.png" alt="القهوة التركي محوج وسط" class="pcc-logo">
+                        <div class="pcc-glow"></div>
+                    </div>
+                    <div class="pcc-info">
+                        <h3>القهوة التركي محوج وسط</h3>
+                        <p class="pcc-tagline">نكهة متوازنة، رائحة آسرة</p>
+                        <p class="pcc-desc">لكل من يبحث عن المذاق الأصيل، صُممت هذه الخلطة بعناية من أجود حبوب البن مع لمسة من الحبهان.</p>
+                        <div class="pcc-ingredients">
+                            <span class="pcc-ing">بن كولومبي أرابيكا</span>
+                            <span class="pcc-ing">حبهان</span>
+                            <span class="pcc-ing">نكهات طبيعية</span>
+                        </div>
+                        <a href="products.html" class="pcc-btn">اكتشف المنتج</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: Coffee Journey -->
+    <section class="cinema-section journey-cinema" id="journey3" data-section="3">
+        <div class="cinema-bg-layer">
+            <div class="cinema-particles"></div>
+        </div>
+        <div class="cinema-content">
+            <div class="cinema-label">رحلة القهوة</div>
+            <h2 class="cinema-heading scroll-reveal">
+                <span class="cinema-line">من الحبّة</span>
+                <span class="cinema-line accent">إلى الفنجان</span>
+            </h2>
+            <div class="journey-cards scroll-reveal" data-delay="0.2">
+                <div class="jc-card">
+                    <svg class="jc-icon" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="rgba(212,165,116,0.2)" stroke-width="1"/><path d="M24 12 C20 12 15 16 15 22 C15 28 20 34 24 36 C28 34 33 28 33 22 C33 16 28 12 24 12Z" fill="rgba(107,58,31,0.5)" stroke="#d4a574" stroke-width="1"/><path d="M24 16 L24 32" stroke="#d4a574" stroke-width="0.6" opacity="0.4"/></svg>
+                    <h4>الزراعة</h4>
+                    <p>حبوب على ارتفاع 2000 متر</p>
+                </div>
+                <div class="jc-card">
+                    <svg class="jc-icon" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="rgba(212,165,116,0.2)" stroke-width="1"/><ellipse cx="24" cy="22" rx="8" ry="10" fill="rgba(107,58,31,0.5)" stroke="#d4a574" stroke-width="1"/><path d="M24 12 L24 8" stroke="#6b8a3a" stroke-width="1.5" stroke-linecap="round"/><path d="M21 10 Q24 6 27 10" stroke="#6b8a3a" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+                    <h4>الحصاد</h4>
+                    <p>جمع يدوي عند النضج</p>
+                </div>
+                <div class="jc-card">
+                    <svg class="jc-icon" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="rgba(212,165,116,0.2)" stroke-width="1"/><rect x="16" y="20" width="16" height="12" rx="2" fill="rgba(107,58,31,0.5)" stroke="#d4a574" stroke-width="1"/><path d="M20 18 Q22 12 24 18" stroke="#ff6b35" stroke-width="1.2" fill="none" opacity="0.6" stroke-linecap="round"/><path d="M24 16 Q26 10 28 16" stroke="#ff6b35" stroke-width="1.2" fill="none" opacity="0.4" stroke-linecap="round"/></svg>
+                    <h4>التحميص</h4>
+                    <p>درجة حرارة متحكمة</p>
+                </div>
+                <div class="jc-card">
+                    <svg class="jc-icon" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="rgba(212,165,116,0.2)" stroke-width="1"/><circle cx="24" cy="24" r="9" fill="rgba(107,58,31,0.4)" stroke="#d4a574" stroke-width="1"/><circle cx="24" cy="24" r="4" fill="rgba(60,30,15,0.6)" stroke="#d4a574" stroke-width="0.6"/><circle cx="24" cy="24" r="1.5" fill="#d4a574"/></svg>
+                    <h4>الطحن</h4>
+                    <p>دقة حسب طريقة التحضير</p>
+                </div>
+                <div class="jc-card">
+                    <svg class="jc-icon" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="rgba(212,165,116,0.2)" stroke-width="1"/><path d="M16 22 Q16 34 24 34 Q32 34 32 22" fill="rgba(250,246,240,0.1)" stroke="#d4a574" stroke-width="1"/><ellipse cx="24" cy="22" rx="8" ry="3" fill="rgba(107,58,31,0.6)" stroke="#d4a574" stroke-width="0.8"/><path d="M32 26 Q36 26 36 29 Q36 32 32 32" stroke="#d4a574" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M22 18 Q21 14 23 11" stroke="rgba(212,165,116,0.3)" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M26 18 Q25 13 27 10" stroke="rgba(212,165,116,0.3)" stroke-width="1" fill="none" stroke-linecap="round"/></svg>
+                    <h4>التحضير</h4>
+                    <p>بحب وعناية</p>
+                </div>
+            </div>
+            <div class="journey-cta scroll-reveal" data-delay="0.3">
+                <a href="coffee-origins.html" class="cinema-btn">اكتشف أصل القهوة</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: Social Media -->
+    <section class="cinema-section social-cinema" id="social4" data-section="4">
+        <div class="cinema-bg-layer">
+            <div class="cinema-particles"></div>
+        </div>
+        <div class="cinema-content">
+            <div class="cinema-label">مواقعنا</div>
+            <h2 class="cinema-heading scroll-reveal">
+                <span class="cinema-line">تابعنا</span>
+                <span class="cinema-line accent">على السوشيال ميديا</span>
+            </h2>
+            <p class="social-sub scroll-reveal" data-delay="0.15">اشترك في قنواتنا وتابع آخر العروض والمنتجات الجديدة</p>
+            <div class="social-grid scroll-reveal" data-delay="0.25">
+                <a href="https://www.instagram.com/malazcoffe/" target="_blank" class="social-banner instagram-banner">
+                    <div class="sb-content">
+                        <div class="sb-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+                        </div>
+                        <div class="sb-text">
+                            <h4>Instagram</h4>
+                            <p>@malazcoffe</p>
+                        </div>
+                    </div>
+                    <div class="sb-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                </a>
+                <a href="https://www.tiktok.com/@malazcoffe" target="_blank" class="social-banner tiktok-banner">
+                    <div class="sb-content">
+                        <div class="sb-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46V13a8.16 8.16 0 005.58 2.17v-3.45a4.85 4.85 0 01-5.58-2.73V6.69h5.58z"/></svg>
+                        </div>
+                        <div class="sb-text">
+                            <h4>TikTok</h4>
+                            <p>@malazcoffe</p>
+                        </div>
+                    </div>
+                    <div class="sb-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                </a>
+            </div>
         </div>
     </section>
 

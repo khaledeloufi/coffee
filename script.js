@@ -67,10 +67,53 @@
         grainsContainer.appendChild(span);
     }
 
-    // --- Header scroll effect ---
+    // --- Hamburger Menu + Scroll Hide ---
+    const hamburger = document.getElementById('hamburger');
+    const menuOverlay = document.getElementById('menuOverlay');
     const header = document.querySelector('header');
+
+    if (hamburger && menuOverlay) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = menuOverlay.classList.contains('active') ? 'hidden' : '';
+        });
+
+        menuOverlay.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
+                hamburger.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
     if (header) {
-        window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50), { passive: true });
+        let lastScroll = 0;
+        let scrollTimer = null;
+
+        window.addEventListener('scroll', () => {
+            const current = window.scrollY;
+
+            if (current > lastScroll && current > 100) {
+                header.classList.add('hidden');
+            }
+
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => {
+                header.classList.remove('hidden');
+            }, 150);
+
+            lastScroll = current;
+        }, { passive: true });
     }
 
     // --- Scroll reveal (IntersectionObserver) ---
@@ -99,16 +142,12 @@
         cursor.innerHTML = '<div class="cursor-dot"></div>';
         document.body.appendChild(cursor);
 
-        let mx = 0, my = 0;
-        document.addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; });
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
 
-        function moveCursor() {
-            cursor.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
-            requestAnimationFrame(moveCursor);
-        }
-        moveCursor();
-
-        document.querySelectorAll('a, button, .btn, .qty-btn, nav a, .insta-card').forEach(el => {
+        document.querySelectorAll('a, button, .btn, .qty-btn, nav a').forEach(el => {
             el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
             el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
         });
@@ -317,50 +356,10 @@
     }
 
     updateBadge();
+})();
 
-    const rotatables = document.querySelectorAll('.rotate-360');
-    rotatables.forEach(rotatable => {
-        let isDragging = false;
-        let startX, startAngle = 0, currentAngle = 0;
-
-        const onStart = (x) => {
-            isDragging = true;
-            startX = x;
-            startAngle = currentAngle;
-            rotatable.style.transition = 'none';
-        };
-
-        const onMove = (x) => {
-            if (!isDragging) return;
-            const delta = x - startX;
-            currentAngle = startAngle + delta * 0.6;
-            rotatable.style.transform = `rotateY(${currentAngle}deg)`;
-        };
-
-        const onEnd = () => {
-            if (!isDragging) return;
-            isDragging = false;
-            rotatable.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-            const snap = Math.round(currentAngle / 30) * 30;
-            currentAngle = snap;
-            rotatable.style.transform = `rotateY(${snap}deg)`;
-        };
-
-        rotatable.addEventListener('mousedown', (e) => onStart(e.clientX));
-        document.addEventListener('mousemove', (e) => onMove(e.clientX));
-        document.addEventListener('mouseup', onEnd);
-
-        rotatable.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            onStart(e.touches[0].clientX);
-        });
-        rotatable.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            onMove(e.touches[0].clientX);
-        });
-        rotatable.addEventListener('touchend', onEnd);
-    });
-
+// --- 3D Tilt Cards (products + about) ---
+(function () {
     const tiltCards = document.querySelectorAll('.tilt-card');
     tiltCards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
@@ -676,4 +675,211 @@
         }, { threshold: 0.25 });
         obs.observe(rankingContainer);
     }
+})();
+
+// --- Coffee Preparation Steps Animation ---
+(function () {
+    const steps = document.querySelectorAll('.cs-step');
+    const dots = document.querySelectorAll('.step-dot');
+    const playBtn = document.getElementById('csPlayBtn');
+    const progressFill = document.getElementById('csProgressFill');
+    if (!steps.length || !dots.length) return;
+
+    let current = 0;
+    let playing = false;
+    let timer = null;
+    let progressTimer = null;
+    const STEP_DURATION = 3000;
+    const PROGRESS_INTERVAL = 30;
+
+    function goToStep(idx) {
+        steps.forEach((s, i) => {
+            s.classList.remove('active', 'exit-left');
+            if (i < idx) s.classList.add('exit-left');
+        });
+        dots.forEach((d, i) => {
+            d.classList.remove('active', 'done');
+            if (i < idx) d.classList.add('done');
+            if (i === idx) d.classList.add('active');
+        });
+        steps[idx].classList.add('active');
+        current = idx;
+    }
+
+    function nextStep() {
+        const next = (current + 1) % steps.length;
+        goToStep(next);
+    }
+
+    function startAutoPlay() {
+        playing = true;
+        playBtn.classList.add('playing');
+        let elapsed = 0;
+        progressFill.style.width = '0%';
+
+        progressTimer = setInterval(() => {
+            elapsed += PROGRESS_INTERVAL;
+            const pct = (elapsed / STEP_DURATION) * 100;
+            progressFill.style.width = Math.min(pct, 100) + '%';
+        }, PROGRESS_INTERVAL);
+
+        timer = setInterval(() => {
+            elapsed = 0;
+            progressFill.style.width = '0%';
+            nextStep();
+        }, STEP_DURATION);
+    }
+
+    function stopAutoPlay() {
+        playing = false;
+        playBtn.classList.remove('playing');
+        clearInterval(timer);
+        clearInterval(progressTimer);
+        progressFill.style.width = '0%';
+    }
+
+    playBtn.addEventListener('click', () => {
+        if (playing) stopAutoPlay();
+        else startAutoPlay();
+    });
+
+    dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+            if (playing) stopAutoPlay();
+            goToStep(i);
+        });
+    });
+
+    // Start auto-play when section scrolls into view
+    const section = document.querySelector('.coffee-steps-section');
+    if (section) {
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !playing) {
+                    startAutoPlay();
+                } else if (!entry.isIntersecting && playing) {
+                    stopAutoPlay();
+                }
+            });
+        }, { threshold: 0.3 });
+        obs.observe(section);
+    }
+})();
+
+// --- CINEMATIC: Scroll Progress Bar ---
+(function () {
+    const bar = document.getElementById('scrollProgress');
+    if (!bar) return;
+    function update() {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+        bar.style.width = pct + '%';
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+})();
+
+// --- CINEMATIC: Section Indicator ---
+(function () {
+    const indicator = document.getElementById('sectionIndicator');
+    if (!indicator) return;
+    const dots = indicator.querySelectorAll('.si-dot');
+    const sections = document.querySelectorAll('.cinema-section');
+    if (!sections.length) return;
+
+    // Show indicator after loading
+    setTimeout(() => indicator.classList.add('visible'), 3500);
+
+    // Click to scroll
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const idx = parseInt(dot.dataset.section);
+            if (sections[idx]) {
+                sections[idx].scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Update active dot on scroll
+    function updateActive() {
+        let current = 0;
+        sections.forEach((sec, i) => {
+            const rect = sec.getBoundingClientRect();
+            if (rect.top < window.innerHeight * 0.5) {
+                current = i;
+            }
+        });
+        dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+    window.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+})();
+
+// --- CINEMATIC: Scroll Reveal (cinema-line, scroll-reveal) ---
+(function () {
+    const reveals = document.querySelectorAll('.cinema-line, .scroll-reveal');
+    if (!reveals.length) return;
+
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const delay = parseFloat(entry.target.dataset.delay) || 0;
+                setTimeout(() => entry.target.classList.add('visible'), delay * 1000);
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+    reveals.forEach(el => obs.observe(el));
+})();
+
+// --- CINEMATIC: Counter Animation ---
+(function () {
+    const counters = document.querySelectorAll('.stat-number[data-count]');
+    if (!counters.length) return;
+
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const target = parseInt(el.dataset.count);
+                const duration = 1500;
+                const start = performance.now();
+
+                function tick(now) {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = Math.round(eased * target);
+                    if (progress < 1) requestAnimationFrame(tick);
+                    else el.textContent = target;
+                }
+                requestAnimationFrame(tick);
+                obs.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    counters.forEach(c => obs.observe(c));
+})();
+
+// --- CINEMATIC: Parallax on hero content ---
+(function () {
+    const hero = document.querySelector('.hero-section');
+    const content = document.querySelector('.hero-content');
+    const scrollHint = document.querySelector('.scroll-hint');
+    if (!hero || !content) return;
+
+    window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        const vh = window.innerHeight;
+        if (scrolled < vh * 1.5) {
+            const pct = scrolled / vh;
+            content.style.transform = `translateY(${pct * 80}px)`;
+            content.style.opacity = 1 - pct * 1.2;
+            if (scrollHint) {
+                scrollHint.style.opacity = Math.max(0, 1 - pct * 3);
+            }
+        }
+    }, { passive: true });
 })();
