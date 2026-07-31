@@ -7,19 +7,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="loading-screen">
-        <div class="loading-particles" id="loadingParticles"></div>
-        <div class="loading-steam">
-            <div class="steam-line s1"></div>
-            <div class="steam-line s2"></div>
-            <div class="steam-line s3"></div>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-curtain loading-curtain-top"></div>
+        <div class="loading-curtain loading-curtain-bottom"></div>
+        <div class="loading-content">
+            <div class="loading-cup">
+                <div class="loading-steam">
+                    <div class="steam-line s1"></div>
+                    <div class="steam-line s2"></div>
+                    <div class="steam-line s3"></div>
+                </div>
+                <svg viewBox="0 0 100 100" class="loading-cup-svg" width="76" height="76">
+                    <defs>
+                        <linearGradient id="lcg" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#faf6f0"/>
+                            <stop offset="100%" stop-color="#e8ddd0"/>
+                        </linearGradient>
+                        <clipPath id="cupClip">
+                            <path d="M30 44 Q30 74 50 74 Q70 74 70 44Z"/>
+                        </clipPath>
+                    </defs>
+                    <ellipse cx="50" cy="76" rx="34" ry="8" fill="#d4a574" opacity="0.25"/>
+                    <rect id="cupFill" x="30" y="74" width="40" height="0" fill="#3b1f0d" clip-path="url(#cupClip)"/>
+                    <rect id="cupCrema" x="30" y="74" width="40" height="0" fill="#8b5e3c" clip-path="url(#cupClip)"/>
+                    <path d="M30 44 Q30 74 50 74 Q70 74 70 44Z" fill="none" stroke="#d4a574" stroke-width="1.2"/>
+                    <ellipse cx="50" cy="44" rx="20" ry="7" fill="#faf6f0" stroke="#d4a574" stroke-width="0.8"/>
+                    <ellipse cx="50" cy="47" rx="17" ry="5" fill="#6b3a1f" opacity="0.35"/>
+                    <path d="M70 49 Q86 49 86 60 Q86 70 70 68" stroke="#f5f0eb" stroke-width="4" fill="none" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="loading-brand">
+                <span class="tw-line" id="twArabic"></span>
+                <span class="tw-line tw-english" id="twEnglish"></span>
+            </div>
+            <div class="loading-progress"><div class="lp-fill" id="loadingProgressFill"></div></div>
         </div>
-        <div class="loading-cup"><svg viewBox="0 0 100 100" class="loading-cup-svg" width="64" height="64"><ellipse cx="50" cy="76" rx="34" ry="8" fill="#d4a574" opacity="0.25"/><path d="M30 44 Q30 74 50 74 Q70 74 70 44Z" fill="url(#lcg)"/><ellipse cx="50" cy="44" rx="20" ry="7" fill="#faf6f0" stroke="#d4a574" stroke-width="0.8"/><ellipse cx="50" cy="47" rx="17" ry="5" fill="#6b3a1f"/><path d="M70 49 Q86 49 86 60 Q86 70 70 68" stroke="#f5f0eb" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M43 34 Q39 25 44 18" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.35" stroke-linecap="round"/><path d="M50 32 Q47 23 52 15" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.25" stroke-linecap="round"/><path d="M57 34 Q53 25 58 18" stroke="#d4a574" stroke-width="2" fill="none" opacity="0.35" stroke-linecap="round"/><defs><linearGradient id="lcg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#faf6f0"/><stop offset="100%" stop-color="#e8ddd0"/></linearGradient></defs></svg></div>
-        <div class="loading-typewriter">
-            <span class="tw-line" id="twArabic"></span>
-            <span class="tw-line tw-english" id="twEnglish"></span>
-        </div>
-        <div class="loading-bar"></div>
     </div>
 
     <!-- Scroll Progress -->
@@ -125,7 +147,20 @@
                     </div>
                 </div>
                 <div class="bf-item">
-                    <div class="bf-icon">🫘</div>
+                    <div class="bf-icon">
+                        <svg viewBox="0 0 64 64" width="34" height="34">
+                            <defs>
+                                <linearGradient id="beanGrad" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#a9793c"/>
+                                    <stop offset="50%" stop-color="#6b3a1f"/>
+                                    <stop offset="100%" stop-color="#4a2510"/>
+                                </linearGradient>
+                            </defs>
+                            <ellipse cx="32" cy="32" rx="26" ry="20" fill="url(#beanGrad)" transform="rotate(-28 32 32)" stroke="#d4a574" stroke-width="1.5" stroke-opacity="0.4"/>
+                            <path d="M25 22 Q32 38 41 45" stroke="#d4a574" stroke-width="1.6" fill="none" stroke-linecap="round" transform="rotate(-28 32 32)" opacity="0.7"/>
+                            <path d="M20 18 Q20 14 23 12" stroke="#a9793c" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.8"/>
+                        </svg>
+                    </div>
                     <div class="bf-text">
                         <h4>بن طازج</h4>
                         <p>محمّص كل يوم عشان يوصلك بأجود حال</p>

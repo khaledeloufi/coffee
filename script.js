@@ -1,21 +1,9 @@
 (function () {
     'use strict';
 
-    // --- Loading screen with particles + typewriter ---
+    // --- Loading screen: typewriter + cup fill + progress bar + curtain split ---
     const loader = document.querySelector('.loading-screen');
     if (loader) {
-        // Create particles
-        const particlesContainer = document.getElementById('loadingParticles');
-        if (particlesContainer) {
-            for (let i = 0; i < 12; i++) {
-                const p = document.createElement('div');
-                p.className = 'loading-particle';
-                p.style.animationDelay = (i * 0.25) + 's';
-                p.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
-                particlesContainer.appendChild(p);
-            }
-        }
-
         // Typewriter effect — type both names simultaneously
         const twArabic = document.getElementById('twArabic');
         const twEnglish = document.getElementById('twEnglish');
@@ -44,7 +32,47 @@
             setTimeout(typeEnglish, 400);
         }
 
-        setTimeout(() => loader.classList.add('hide'), 3200);
+        // Cup fill + full-width progress bar
+        const fillEl = document.getElementById('cupFill');
+        const cremaEl = document.getElementById('cupCrema');
+        const progressFill = document.getElementById('loadingProgressFill');
+        const CUP_TOP = 44;
+        const CUP_BOTTOM = 74;
+        const CUP_HEIGHT = CUP_BOTTOM - CUP_TOP;
+        const duration = 2400;
+        const startTime = performance.now();
+
+        function updateFill() {
+            const elapsed = performance.now() - startTime;
+            const progress = Math.min(100, (elapsed / duration) * 100);
+
+            if (progressFill) progressFill.style.width = progress + '%';
+
+            const h = (progress / 100) * CUP_HEIGHT;
+            if (fillEl) {
+                fillEl.setAttribute('y', CUP_BOTTOM - h);
+                fillEl.setAttribute('height', h);
+            }
+            if (cremaEl) {
+                const cremaH = Math.min(3, h);
+                cremaEl.setAttribute('y', CUP_BOTTOM - h);
+                cremaEl.setAttribute('height', cremaH);
+            }
+
+            if (progress < 100) {
+                requestAnimationFrame(updateFill);
+            } else {
+                finishLoading();
+            }
+        }
+
+        function finishLoading() {
+            setTimeout(() => loader.classList.add('done'), 350);
+            setTimeout(() => loader.classList.add('exiting'), 750);
+            setTimeout(() => loader.classList.add('gone'), 2100);
+        }
+
+        requestAnimationFrame(updateFill);
     }
 
     // --- Coffee grains background ---
@@ -863,7 +891,7 @@
     counters.forEach(c => obs.observe(c));
 })();
 
-// --- CINEMATIC: Parallax on hero content ---
+// --- CINEMATIC: Parallax on hero content + scroll hint click ---
 (function () {
     const hero = document.querySelector('.hero-section');
     const content = document.querySelector('.hero-content');
@@ -882,4 +910,13 @@
             }
         }
     }, { passive: true });
+
+    if (scrollHint) {
+        scrollHint.addEventListener('click', () => {
+            const next = document.querySelector('.cinema-section:nth-of-type(2)');
+            if (next) {
+                next.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
 })();
