@@ -268,7 +268,14 @@
         const productName = section.dataset.product || 'القهوة التركي';
         const qtyBtns = section.querySelectorAll('.qty-btn');
         const addBtn = section.querySelector('.add-to-cart-btn');
+        const stepperVal = section.querySelector('.stepper-value');
+        const stepperBtns = section.querySelectorAll('.stepper-btn');
         let selectedQty = 'ربع كيلو (250g)';
+        let qtyCount = 1;
+
+        const activeBtn = section.querySelector('.qty-btn.active');
+        if (activeBtn) selectedQty = activeBtn.dataset.qty;
+        if (stepperVal) qtyCount = parseInt(stepperVal.textContent, 10) || 1;
 
         qtyBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -278,19 +285,94 @@
             });
         });
 
+        stepperBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.dataset.action === 'plus') {
+                    qtyCount++;
+                } else {
+                    qtyCount = Math.max(1, qtyCount - 1);
+                }
+                if (stepperVal) stepperVal.textContent = qtyCount;
+            });
+        });
+
+        function steamBurst() {
+            if (!addBtn) return;
+            for (let i = 0; i < 6; i++) {
+                const w = document.createElement('span');
+                w.className = 'steam-burst';
+                w.style.left = (30 + Math.random() * 40) + '%';
+                w.style.setProperty('--sx', (Math.random() * 30 - 15) + 'px');
+                w.style.animationDelay = (Math.random() * 0.25) + 's';
+                w.style.height = (22 + Math.random() * 16) + 'px';
+                addBtn.appendChild(w);
+                setTimeout(() => w.remove(), 1600);
+            }
+        }
+
+        function waxSeal() {
+            if (!addBtn) return;
+            const seal = document.createElement('span');
+            seal.className = 'wax-seal';
+            seal.innerHTML =
+                '<span class="ws-shadow"></span>' +
+                '<span class="ws-drip"></span>' +
+                '<span class="ws-ornament"></span>' +
+                '<span class="ws-star">✦</span>' +
+                '<span class="ws-name">مَلَاذ</span>' +
+                '<span class="ws-shine"></span>' +
+                '<span class="ws-stamp">ختمنا طلبك</span>';
+            addBtn.appendChild(seal);
+            addBtn.classList.add('sealed');
+            setTimeout(() => {
+                const stamp = seal.querySelector('.ws-stamp');
+                const name = seal.querySelector('.ws-name');
+                if (stamp) stamp.classList.add('done');
+                if (name) name.classList.add('show');
+            }, 850);
+            setTimeout(() => dissolve(seal), 1350);
+            setTimeout(() => {
+                seal.remove();
+                addBtn.classList.remove('sealed');
+            }, 2050);
+        }
+
+        function dissolve(seal) {
+            for (let i = 0; i < 14; i++) {
+                const p = document.createElement('span');
+                p.className = 'ws-particle';
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 22 + Math.random() * 46;
+                const dx = Math.cos(angle) * dist;
+                const dy = Math.sin(angle) * dist - 16;
+                p.style.setProperty('--dx', dx.toFixed(1) + 'px');
+                p.style.setProperty('--dy', dy.toFixed(1) + 'px');
+                p.style.animationDelay = (Math.random() * 0.12).toFixed(2) + 's';
+                const s = 3.5 + Math.random() * 3.5;
+                p.style.width = s.toFixed(1) + 'px';
+                p.style.height = p.style.width;
+                p.style.marginLeft = (-s / 2).toFixed(1) + 'px';
+                p.style.marginTop = p.style.marginLeft;
+                seal.appendChild(p);
+            }
+        }
+
         addBtn.addEventListener('click', () => {
             const existing = cart.find(i => i.name === productName && i.qty === selectedQty);
             if (existing) {
-                existing.count++;
+                existing.count += qtyCount;
             } else {
-                cart.push({ name: productName, qty: selectedQty, count: 1 });
+                cart.push({ name: productName, qty: selectedQty, count: qtyCount });
             }
             saveCart();
+            steamBurst();
+            waxSeal();
 
-            addBtn.textContent = '✓ تمت الإضافة';
+            const btnLabel = addBtn.querySelector('.btn-label');
+            if (btnLabel) btnLabel.textContent = '✓ تمت الإضافة';
             addBtn.classList.add('added');
             setTimeout(() => {
-                addBtn.textContent = '🛒 أضف للسلة';
+                if (btnLabel) btnLabel.textContent = '🛒 أضف للسلة';
                 addBtn.classList.remove('added');
             }, 1200);
         });
@@ -301,7 +383,6 @@
     const cartClose = document.getElementById('cartClose');
     const cartItems = document.getElementById('cartItems');
     const cartFooter = document.getElementById('cartFooter');
-    const cartTotal = document.getElementById('cartTotal');
     const cartWhatsapp = document.getElementById('cartWhatsapp');
 
     function renderCart() {
@@ -319,7 +400,7 @@
                 <div class="cart-item">
                     <div class="cart-item-info">
                         <span class="cart-item-name">${item.name}</span>
-                        <span class="cart-item-qty">${item.qty}</span>
+                        <span class="cart-item-qty">${item.qty} × ${item.count}</span>
                     </div>
                     <div class="cart-item-controls">
                         <button class="cart-count-btn" data-idx="${idx}" data-action="minus">−</button>

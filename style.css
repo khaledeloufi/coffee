@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
 * {
     margin: 0;
@@ -24,7 +24,11 @@ a { text-decoration: none; color: inherit; }
 }
 
 .highlight {
-    color: #a0522d;
+    color: transparent;
+    background: linear-gradient(135deg, #f7e8c8 0%, #d4a574 40%, #a0522d 75%, #eecf96 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /* Loading screen */
@@ -1458,6 +1462,59 @@ footer {
     color: #2c1810;
     margin-bottom: 15px;
 }
+/* --- Smart Quantity Stepper --- */
+.qty-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+.stepper-label {
+    font-size: 0.9em;
+    color: #2c1810;
+    font-weight: 600;
+}
+.stepper-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 2px solid #d4a574;
+    border-radius: 12px;
+    padding: 4px 10px;
+}
+.stepper-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(212,165,116,0.12);
+    color: #2c1810;
+    font-size: 1.2em;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+    line-height: 1;
+}
+.stepper-btn:hover {
+    background: #a0522d;
+    color: #fff;
+    transform: scale(1.05);
+}
+.stepper-btn:active {
+    transform: scale(0.92);
+}
+.stepper-value {
+    min-width: 26px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: 800;
+    color: #2c1810;
+}
 .quantity-options {
     display: flex;
     gap: 12px;
@@ -1509,6 +1566,10 @@ footer {
     .order-section h4 { font-size: 1em; margin-bottom: 12px; }
     .qty-btn { padding: 8px 16px; font-size: 0.85em; }
     .order-btn { padding: 12px 30px; font-size: 1em; }
+    .qty-stepper { gap: 10px; }
+    .stepper-controls { padding: 3px 8px; gap: 8px; }
+    .stepper-btn { width: 26px; height: 26px; font-size: 1em; }
+    .stepper-label { font-size: 0.82em; }
 }
 
 @media (max-width: 900px) {
@@ -1862,6 +1923,8 @@ footer {
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
     font-family: 'Cairo', sans-serif;
+    position: relative;
+    overflow: visible;
 }
 .add-to-cart-btn:hover {
     transform: translateY(-2px);
@@ -1869,6 +1932,196 @@ footer {
 }
 .add-to-cart-btn.added {
     background: linear-gradient(135deg, #2d6a4f, #40916c);
+}
+
+/* --- Steam burst on add-to-cart --- */
+.steam-burst {
+    position: absolute;
+    bottom: 96%;
+    width: 3px;
+    border-radius: 50%;
+    background: linear-gradient(to top, rgba(212,165,116,0.55), transparent);
+    filter: blur(1px);
+    pointer-events: none;
+    opacity: 0;
+    animation: steamBurst 1.1s ease-out forwards;
+}
+@keyframes steamBurst {
+    0% { opacity: 0; transform: translateY(0) translateX(0) scaleX(1); }
+    20% { opacity: 0.85; }
+    100% { opacity: 0; transform: translateY(-52px) translateX(var(--sx, 0px)) scaleX(2.4); }
+}
+
+/* --- Golden wax seal on add-to-cart --- */
+.wax-seal {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #f9edcf 0%, #d4a574 42%, #a0522d 92%);
+    border: 3px dashed rgba(90,45,20,0.5);
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.4),
+        inset 0 0 0 4px rgba(90,45,20,0.3),
+        inset 0 0 0 7px rgba(250,246,240,0.14),
+        inset 0 0 16px rgba(60,30,10,0.35);
+    pointer-events: none;
+    z-index: 3;
+    animation:
+        waxSealPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+        waxSealGone 0.5s ease-in 1.4s forwards;
+}
+@keyframes waxSealPop {
+    0% { transform: translateX(-50%) translateY(82px) scale(0.15) rotate(-25deg); opacity: 0; }
+    55% { transform: translateX(-50%) translateY(0) scale(1.12) rotate(5deg); opacity: 1; }
+    75% { transform: translateX(-50%) translateY(0) scale(0.98) rotate(-1.5deg); }
+    100% { transform: translateX(-50%) translateY(0) scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes waxSealGone {
+    to { transform: translateX(-50%) scale(0.65) rotate(8deg); opacity: 0; }
+}
+/* Cast shadow under the seal */
+.ws-shadow {
+    position: absolute;
+    bottom: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 66px;
+    height: 12px;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.5), transparent 70%);
+    filter: blur(3px);
+    z-index: -1;
+}
+/* Wax drip hanging from the edge — falls like melting wax on exit */
+.ws-drip {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    width: 13px;
+    height: 15px;
+    background: radial-gradient(circle at 35% 30%, #f9edcf 0%, #d4a574 45%, #a0522d 95%);
+    border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+    z-index: 0;
+    animation: wsDripFall 0.5s ease-in 1.35s forwards;
+}
+@keyframes wsDripFall {
+    0% { transform: translateX(-50%) translateY(0) scale(1, 1); opacity: 1; }
+    15% { transform: translateX(-50%) translateY(3px) scale(1.2, 0.65); opacity: 1; }
+    70% { transform: translateX(-50%) translateY(30px) scale(1, 1.45); opacity: 1; }
+    100% { transform: translateX(-50%) translateY(40px) scale(0.9, 1.1); opacity: 0; }
+}
+/* Golden dust dissolve on exit */
+.ws-particle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f9edcf 0%, #d4a574 55%, #a0522d 100%);
+    box-shadow: 0 0 6px rgba(212,165,116,0.7);
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0;
+    animation: wsDissolve 0.55s ease-out forwards;
+}
+@keyframes wsDissolve {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx, 30px), var(--dy, -40px)) scale(0.15); opacity: 0; }
+}
+/* Inner arabesque ring */
+.ws-ornament {
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(90,45,20,0.4);
+    z-index: 0;
+    pointer-events: none;
+}
+/* Twinkling star */
+.ws-star {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    line-height: 1;
+    color: #f7e8c8;
+    text-shadow: 0 0 6px rgba(247,232,200,0.9);
+    z-index: 1;
+    animation: wsTwinkle 1.6s ease-in-out infinite;
+}
+@keyframes wsTwinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+/* Brand name */
+.ws-name {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Aref Ruqaa', 'Cairo', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #3d2111;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+    z-index: 1;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.ws-name.show {
+    opacity: 1;
+    transform: scale(1);
+}
+/* Moving golden shine over the surface */
+.ws-shine {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,246,230,0.55) 50%, transparent 60%);
+    background-size: 250% 100%;
+    animation: wsShine 2.2s ease-in-out infinite;
+    z-index: 2;
+    pointer-events: none;
+}
+@keyframes wsShine {
+    0% { background-position: 130% 0; }
+    55% { background-position: -130% 0; }
+    100% { background-position: -130% 0; }
+}
+/* "ختمنا طلبك" engraved stamp, fades out to reveal the brand */
+.ws-stamp {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Aref Ruqaa', 'Cairo', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(61,33,17,0.9);
+    text-shadow:
+        0 -1px 0 rgba(255,255,255,0.35),
+        0 1px 1px rgba(0,0,0,0.25);
+    z-index: 3;
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.ws-stamp.done {
+    opacity: 0;
+    transform: scale(0.9);
+}
+.add-to-cart-btn.sealed {
+    animation: btnSealedShake 0.45s ease;
+}
+@keyframes btnSealedShake {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-2px) rotate(-1deg); }
+    75% { transform: translateY(-2px) rotate(1deg); }
 }
 
 /* === Cart Overlay & Modal === */
@@ -2015,15 +2268,6 @@ footer {
 .cart-footer {
     padding: 16px 24px;
     border-top: 1px solid rgba(212,165,116,0.2);
-}
-.cart-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-    font-weight: 700;
-    font-size: 1.1em;
-    color: #2c1810;
 }
 .cart-whatsapp-btn {
     display: flex;
@@ -2953,15 +3197,43 @@ footer {
     font-weight: 700;
 }
 
+/* --- Cinema Section Number (watermark) --- */
+.cinema-num {
+    position: absolute;
+    top: 32px;
+    right: 42px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 6em;
+    line-height: 1;
+    color: rgba(212,165,116,0.13);
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+}
+
 /* --- Cinema Heading --- */
 .cinema-heading {
     margin-bottom: 40px;
     line-height: 1.4;
+    text-align: center;
+}
+.cinema-heading::before {
+    content: '';
+    display: block;
+    width: 140px;
+    height: 34px;
+    margin: 0 auto 18px;
+    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20140%2034'%20fill='none'%3E%3Cline%20x1='0'%20y1='17'%20x2='46'%20y2='17'%20stroke='%23d4a574'%20stroke-width='0.8'%20opacity='0.45'/%3E%3Cline%20x1='94'%20y1='17'%20x2='140'%20y2='17'%20stroke='%23d4a574'%20stroke-width='0.8'%20opacity='0.45'/%3E%3Crect%20x='63'%20y='13'%20width='14'%20height='14'%20transform='rotate(45%2070%2020)'%20stroke='%23d4a574'%20stroke-width='0.9'/%3E%3Ccircle%20cx='70'%20cy='20'%20r='7'%20stroke='%23d4a574'%20stroke-width='0.5'%20opacity='0.4'/%3E%3Ccircle%20cx='70'%20cy='20'%20r='2.5'%20stroke='%23d4a574'%20stroke-width='0.7'%20opacity='0.8'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 .cinema-line {
     display: block;
     font-size: 3.5em;
-    font-weight: 900;
+    font-weight: 700;
+    font-family: 'Aref Ruqaa', 'Cairo', serif;
     color: #faf6f0;
     opacity: 0;
     transform: translateY(40px);
@@ -2969,7 +3241,11 @@ footer {
                 transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .cinema-line.accent {
-    color: #d4a574;
+    color: transparent;
+    background: linear-gradient(135deg, #f7e8c8 0%, #d4a574 40%, #b07a45 70%, #eed6a3 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 4em;
 }
 .cinema-line.visible {
@@ -3173,6 +3449,11 @@ footer {
 /* --- Social Banners (Cinema) --- */
 .social-cinema {
     background: linear-gradient(180deg, #1a0f0a 0%, #0d0805 50%, #1a0f0a 100%);
+    min-height: 80vh;
+    padding: 90px 40px 70px;
+}
+.contact.cinema-section {
+    min-height: 80vh;
 }
 .social-sub {
     text-align: center;
@@ -3404,9 +3685,15 @@ footer {
 /* --- Cinema Title Animation --- */
 .cinema-title {
     font-size: 7em !important;
-    font-weight: 900;
-    color: #d4a574;
-    text-shadow: 0 0 60px rgba(212,165,116,0.3);
+    font-weight: 700;
+    font-family: 'Aref Ruqaa', 'Cairo', serif;
+    color: transparent;
+    background: linear-gradient(135deg, #f7e8c8 0%, #d4a574 35%, #b07a45 60%, #eed6a3 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 20px rgba(212,165,116,0.35));
+    text-shadow: none;
     animation: none;
     opacity: 1;
     transform: none;
@@ -3417,6 +3704,23 @@ footer {
     animation: none !important;
     color: rgba(250,246,240,0.7);
     letter-spacing: 2px;
+}
+
+/* --- Arabic Display Font (Aref Ruqaa) for headings --- */
+.tw-line,
+.ml-text,
+.products h2,
+.about h2,
+.contact h2,
+.coffee-origins h2,
+.coffee-steps-title,
+.origin-card h4,
+.pcc-info h3,
+.jc-card h4,
+.cs-info h3,
+.panel-name,
+.stat-number {
+    font-family: 'Aref Ruqaa', 'Cairo', serif;
 }
 
 /* --- Footer Cinema --- */
@@ -3445,6 +3749,16 @@ footer {
 
 @media (max-width: 700px) {
     .cinema-section { padding: 80px 20px 40px; }
+    .cinema-heading::before {
+        width: 100px;
+        height: 26px;
+        margin-bottom: 12px;
+    }
+    .cinema-num {
+        font-size: 3.2em;
+        top: 18px;
+        right: 18px;
+    }
     .cinema-line { font-size: 2em; }
     .cinema-line.accent { font-size: 2.4em; }
     .cinema-title { font-size: 3.5em !important; }
