@@ -1001,3 +1001,34 @@
         });
     }
 })();
+
+// --- Page transition curtain between pages ---
+(function () {
+    const pt = document.createElement('div');
+    pt.className = 'page-transition';
+    pt.innerHTML = '<div class="pt-curtain pt-curtain-top"></div><div class="pt-curtain pt-curtain-bottom"></div>';
+    document.body.appendChild(pt);
+
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (!link) return;
+        const href = link.getAttribute('href') || '';
+        if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+        if (link.target === '_blank' || link.hasAttribute('download')) return;
+        if (!/\.html(\?|#|$)/.test(href)) return;
+        e.preventDefault();
+        pt.classList.add('active');
+        setTimeout(() => { window.location.href = href; }, 550);
+    });
+})();
+
+// --- Skeleton shimmer while images load ---
+(function () {
+    document.querySelectorAll('img').forEach(img => {
+        if (img.complete) return;
+        img.classList.add('img-loading');
+        const done = () => img.classList.remove('img-loading');
+        img.addEventListener('load', done);
+        img.addEventListener('error', done);
+    });
+})();
