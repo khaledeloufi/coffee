@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إدارة المنتجات — مَلَاذ</title>
+<style>
+:root {
+  --gold: #d4a574;
+  --brown-dark: #a0522d;
+  --brown-deep: #5a2e1a;
+  --bg: #1a0f0a;
+  --cream: #faf6f0;
+  --cell: #241610;
+  --line: rgba(212, 165, 116, .25);
+}
+* { box-sizing: border-box; margin: 0; }
+body {
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--cream);
+  min-height: 100vh;
+}
+header {
+  background: linear-gradient(135deg, var(--brown-deep), #3a1e10);
+  border-bottom: 2px solid var(--gold);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+header h1 {
+  font-size: 20px;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+header h1 small { color: var(--cream); font-weight: 400; font-size: 13px; }
+.chip {
+  background: rgba(212, 165, 116, .14);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--gold);
+}
+main { padding: 24px; max-width: 1180px; margin: 0 auto; }
+
+/* login panel */
+.card {
+  background: var(--cell);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.card h2 {
+  color: var(--gold);
+  font-size: 16px;
+  margin-bottom: 14px;
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 10px;
+}
+label { display: block; font-size: 13px; margin-bottom: 6px; color: #e8d9c4; }
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: #160d08;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--cream);
+  font-size: 14px;
+  margin-bottom: 12px;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+button {
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--gold), var(--brown-dark));
+  border: none;
+  color: #160d08;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: filter .2s, transform .1s;
+}
+button:hover { filter: brightness(1.1); }
+button:active { transform: scale(.98); }
+button.ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--gold);
+  font-weight: 400;
+}
+button.danger {
+  background: #7a2323;
+  color: #ffd9d9;
+  font-weight: 400;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+button.small { padding: 6px 12px; font-size: 12px; }
+
+/* products table */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th {
+  text-align: right;
+  color: var(--gold);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--gold);
+  padding: 10px 8px;
+}
+td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+tr:hover td { background: rgba(212, 165, 116, .05); }
+.name-cell b { color: var(--cream); }
+.name-cell span {
+  font-size: 12px;
+  color: #a88f6f;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+.cat-chip {
+  background: rgba(212, 165, 116, .12);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #e8c9a0;
+}
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+}
+.badge.on { background: #1d4d2a; color: #9be0ae; }
+.badge.off { background: #4d1d1d; color: #e0a3a3; }
+.actions { display: flex; gap: 6px; }
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #2a1c12;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all .3s;
+  z-index: 50;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.err { border-color: #b05a5a; color: #ffb3b3; }
+.empty {
+  text-align: center;
+  color: #a88f6f;
+  padding: 30px;
+  font-size: 14px;
+}
+.hidden { display: none; }
+#logoutBtn { position: relative; }
+.grid-2 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+#formTitle.pending { color: #e8c9a0; font-weight: 400; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>☕ مَلَاذ <small>— لوحة إدارة المنتجات</small></h1>
+  <div id="authStatus"><span class="chip">🔒 غير مسجل دخول</span></div>
+</header>
+
+<main>
+
+  <!-- LOGIN -->
+  <section id="loginCard" class="card">
+    <h2>🔑 تسجيل دخول المدير</h2>
+    <label for="adminToken">التوكن السري</label>
+    <input type="password" id="adminToken" placeholder="X-Admin-Token" autocomplete="off">
+    <button id="loginBtn">تسجيل الدخول</button>
+  </section>
+
+  <!-- ADD / EDIT FORM -->
+  <section id="formCard" class="card hidden">
+    <h2 id="formTitle">＋ إضافة منتج جديد</h2>
+    <div class="grid-2">
+      <div>
+        <label>اسم المنتج *</label>
+        <input id="pName" placeholder="مثال: قهوة عربية">
+      </div>
+      <div>
+        <label>التصنيف</label>
+        <select id="pCategory">
+          <option value="brewed">مشروب ساخن</option>
+          <option value="espresso">إسبريسو</option>
+          <option value="specialty">قهوة مختصة</option>
+          <option value="cold">مشروب بارد</option>
+          <option value="dessert">حلوى</option>
+        </select>
+      </div>
+      <div>
+        <label>رابط الصورة</label>
+        <input id="pImage" placeholder="optional">
+      </div>
+    </div>
+    <label>وصف المنتج</label>
+    <textarea id="pDescription" rows="2" placeholder="وصف قصير"></textarea>
+    <label>المكونات (سطر لكل مكون)</label>
+    <textarea id="pIngredients" rows="3" placeholder="بن كولومبي أرابيكا&#10;حبهان&#10;بن هندي روبيستا"></textarea>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button id="saveBtn">💾 حفظ</button>
+      <button id="cancelBtn" class="ghost">إلغاء</button>
+      <label style="display:flex;align-items:center;gap:6px;margin:0;color:#e8d9c4;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="pAvailable" checked style="width:auto;margin:0"> متوفر
+      </label>
+    </div>
+  </section>
+
+  <!-- PRODUCTS LIST -->
+  <section id="listCard" class="card hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0;border:none;padding:0">📦 المنتجات <span id="count" class="chip"></span></h2>
+      <div style="display:flex;gap:8px">
+        <button id="refreshBtn" class="small ghost">↻ تحديث</button>
+        <button id="addBtn" class="small">＋ إضافة</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>المنتج</th>
+            <th>التصنيف</th>
+            <th>الحالة</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div id="emptyMsg" class="empty hidden">لا يوجد منتجات بعد — اضغط "＋ إضافة" لإنشاء أول منتج</div>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>

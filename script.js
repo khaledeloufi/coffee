@@ -262,9 +262,9 @@
         }
     }
 
-    const orderSections = document.querySelectorAll('.order-section');
+    document.querySelectorAll('.order-section').forEach(setupOrderSection);
 
-    orderSections.forEach(section => {
+    function setupOrderSection(section) {
         const productName = section.dataset.product || 'القهوة التركي';
         const qtyBtns = section.querySelectorAll('.qty-btn');
         const addBtn = section.querySelector('.add-to-cart-btn');
@@ -376,7 +376,78 @@
                 addBtn.classList.remove('added');
             }, 1200);
         });
-    });
+    }
+
+    /* load products saved from the admin panel and render them */
+    (async function () {
+        const container = document.querySelector('.products .cinema-content');
+        const apiHost = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+            ? 'http://localhost:3000'
+            : 'http://' + location.hostname + ':3000';
+        function escHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        if (container) {
+            let data = null;
+            try {
+                const res = await fetch('/api/products');
+                if (res.ok) data = await res.json();
+            } catch (_) { /* try localhost next */ }
+            if (!data) {
+                try {
+                    const res = await fetch(apiHost + '/api/products');
+                    if (res.ok) data = await res.json();
+                } catch (_) { /* backend off — keep static cards only */ }
+            }
+            if (data && Array.isArray(data.products)) {
+                data.products.forEach(p => {
+                    if (p.available === false) return;
+                    const card = document.createElement('div');
+                    card.className = 'featured-product tilt-card scroll-reveal';
+                    card.setAttribute('data-remote', 'true');
+                    const img = p.image && p.image.trim() ? p.image.trim() : 'img.logo.png';
+                    const desc = (p.description || '').trim();
+                    card.innerHTML =
+                        '<div class="product-body">' +
+                            '<div class="product-visual tilt-deep">' +
+                                '<img src="' + img + '" alt="' + escHtml(p.name) + '" class="product-logo">' +
+                            '</div>' +
+                            '<div class="product-info">' +
+                                '<h3>' + escHtml(p.name) + '</h3>' +
+                                (p.ingredients && p.ingredients.length
+                                    ? '<div class="ingredients"><h4>المكونات:</h4><ul>' +
+                                      p.ingredients.map(i => '<li><span>' + escHtml(i) + '</span></li>').join('') +
+                                      '</ul></div>'
+                                    : '') +
+                                (desc ? '<p class="desc">' + escHtml(desc) + '</p>' : '') +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="order-section reveal" data-product="' + escHtml(p.name) + '">' +
+                            '<h4>أضف للسلة</h4>' +
+                            '<div class="quantity-options">' +
+                                '<button type="button" class="qty-btn active" data-qty="ربع كيلو (250g)">ربع كيلو</button>' +
+                                '<button type="button" class="qty-btn" data-qty="نصف كيلو (500g)">نصف كيلو</button>' +
+                                '<button type="button" class="qty-btn" data-qty="كيلو (1000g)">كيلو</button>' +
+                            '</div>' +
+                            '<div class="qty-stepper">' +
+                                '<span class="stepper-label">الكمية</span>' +
+                                '<div class="stepper-controls">' +
+                                    '<button type="button" class="stepper-btn" data-action="minus" aria-label="تقليل الكمية">−</button>' +
+                                    '<span class="stepper-value">1</span>' +
+                                    '<button type="button" class="stepper-btn" data-action="plus" aria-label="زيادة الكمية">+</button>' +
+                                '</div>' +
+                            '</div>' +
+                            '<button class="add-to-cart-btn"><span class="btn-label">🛒 أضف للسلة</span></button>' +
+                        '</div>';
+                    container.appendChild(card);
+                    setupOrderSection(card.querySelector('.order-section'));
+                    card.classList.add('visible');
+                    const os = card.querySelector('.order-section');
+                    if (os) os.classList.add('visible');
+                });
+            }
+        }
+    })();
 
     const cartBtn = document.getElementById('cartBtn');
     const cartOverlay = document.getElementById('cartOverlay');
