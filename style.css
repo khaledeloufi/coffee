@@ -2304,7 +2304,13 @@ footer {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
     transition: border-color 0.2s;
+}
+.cart-item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 .cart-item:hover .cart-item-img {
     border-color: rgba(212, 165, 116, 0.35);

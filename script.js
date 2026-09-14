@@ -385,7 +385,7 @@
     const cartFooter = document.getElementById('cartFooter');
     const cartWhatsapp = document.getElementById('cartWhatsapp');
 
-    const coffeeSvg = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#d4a574" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
+    const cartItemImg = '<img src="img.logo.png" alt="">';
 
     function renderCart() {
         if (!cartItems) return;
@@ -416,7 +416,7 @@
             html +=
                 '<div class="cart-item" data-idx="' + idx + '">' +
                     '<div class="cart-item-row">' +
-                        '<div class="cart-item-img">' + coffeeSvg + '</div>' +
+                        '<div class="cart-item-img">' + cartItemImg + '</div>' +
                         '<div class="cart-item-info">' +
                             '<span class="cart-item-name">' + item.name + '</span>' +
                             '<span class="cart-item-qty">' + item.qty + '</span>' +
