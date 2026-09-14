@@ -402,7 +402,7 @@
                         '<line x1="14" y1="1" x2="14" y2="4"/>' +
                     '</svg>' +
                     '<p>لسه مفيش حاجة!</p>' +
-                    '<span>افتح المنيو واختار قهوتك المفضلة</span>' +
+                    '<span>افتح المنتجات واختار منتجك المفضل</span>' +
                 '</div>';
             cartFooter.style.display = 'none';
             if (summaryEl) summaryEl.innerHTML = '';
