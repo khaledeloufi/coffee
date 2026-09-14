@@ -3481,6 +3481,7 @@ footer {
 }
 .products-cta {
     margin-top: 32px;
+    text-align: center;
 }
 .product-card-cinema {
     background: rgba(255,255,255,0.03);
