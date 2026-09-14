@@ -3479,6 +3479,9 @@ footer {
     gap: 30px;
     margin-top: 20px;
 }
+.products-cta {
+    margin-top: 32px;
+}
 .product-card-cinema {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(212,165,116,0.12);
