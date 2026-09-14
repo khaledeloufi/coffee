@@ -432,7 +432,6 @@
         });
         cartItems.innerHTML = html;
 
-        const summaryEl = document.getElementById('cartSummary');
         if (summaryEl) {
             summaryEl.innerHTML =
                 '<div class="cart-summary-row cart-summary-total"><span>المجموع</span><span>' + cart.length + ' أصناف</span></div>';
