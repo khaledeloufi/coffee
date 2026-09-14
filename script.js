@@ -378,77 +378,6 @@
         });
     }
 
-    /* load products saved from the admin panel and render them */
-    (async function () {
-        const container = document.querySelector('.products .cinema-content');
-        const apiHost = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-            ? 'http://localhost:3000'
-            : 'http://' + location.hostname + ':3000';
-        function escHtml(s) {
-            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        }
-        if (container) {
-            let data = null;
-            try {
-                const res = await fetch('/api/products');
-                if (res.ok) data = await res.json();
-            } catch (_) { /* try localhost next */ }
-            if (!data) {
-                try {
-                    const res = await fetch(apiHost + '/api/products');
-                    if (res.ok) data = await res.json();
-                } catch (_) { /* backend off — keep static cards only */ }
-            }
-            if (data && Array.isArray(data.products)) {
-                data.products.forEach(p => {
-                    if (p.available === false) return;
-                    const card = document.createElement('div');
-                    card.className = 'featured-product tilt-card scroll-reveal';
-                    card.setAttribute('data-remote', 'true');
-                    const img = p.image && p.image.trim() ? p.image.trim() : 'img.logo.png';
-                    const desc = (p.description || '').trim();
-                    card.innerHTML =
-                        '<div class="product-body">' +
-                            '<div class="product-visual tilt-deep">' +
-                                '<img src="' + img + '" alt="' + escHtml(p.name) + '" class="product-logo">' +
-                            '</div>' +
-                            '<div class="product-info">' +
-                                '<h3>' + escHtml(p.name) + '</h3>' +
-                                (p.ingredients && p.ingredients.length
-                                    ? '<div class="ingredients"><h4>المكونات:</h4><ul>' +
-                                      p.ingredients.map(i => '<li><span>' + escHtml(i) + '</span></li>').join('') +
-                                      '</ul></div>'
-                                    : '') +
-                                (desc ? '<p class="desc">' + escHtml(desc) + '</p>' : '') +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="order-section reveal" data-product="' + escHtml(p.name) + '">' +
-                            '<h4>أضف للسلة</h4>' +
-                            '<div class="quantity-options">' +
-                                '<button type="button" class="qty-btn active" data-qty="ربع كيلو (250g)">ربع كيلو</button>' +
-                                '<button type="button" class="qty-btn" data-qty="نصف كيلو (500g)">نصف كيلو</button>' +
-                                '<button type="button" class="qty-btn" data-qty="كيلو (1000g)">كيلو</button>' +
-                            '</div>' +
-                            '<div class="qty-stepper">' +
-                                '<span class="stepper-label">الكمية</span>' +
-                                '<div class="stepper-controls">' +
-                                    '<button type="button" class="stepper-btn" data-action="minus" aria-label="تقليل الكمية">−</button>' +
-                                    '<span class="stepper-value">1</span>' +
-                                    '<button type="button" class="stepper-btn" data-action="plus" aria-label="زيادة الكمية">+</button>' +
-                                '</div>' +
-                            '</div>' +
-                            '<button class="add-to-cart-btn"><span class="btn-label">🛒 أضف للسلة</span></button>' +
-                        '</div>';
-                    container.appendChild(card);
-                    setupOrderSection(card.querySelector('.order-section'));
-                    card.classList.add('visible');
-                    const os = card.querySelector('.order-section');
-                    if (os) os.classList.add('visible');
-                });
-            }
-        }
-    })();
-
     const cartBtn = document.getElementById('cartBtn');
     const cartOverlay = document.getElementById('cartOverlay');
     const cartClose = document.getElementById('cartClose');
@@ -456,32 +385,58 @@
     const cartFooter = document.getElementById('cartFooter');
     const cartWhatsapp = document.getElementById('cartWhatsapp');
 
+    const coffeeSvg = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#d4a574" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
+
     function renderCart() {
         if (!cartItems) return;
+        const summaryEl = document.getElementById('cartSummary');
+
         if (cart.length === 0) {
-            cartItems.innerHTML = '<p class="cart-empty">السلة فاضية — أضف منتجات أولاً</p>';
+            cartItems.innerHTML =
+                '<div class="cart-empty">' +
+                    '<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="rgba(212,165,116,0.35)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">' +
+                        '<path d="M18 8h1a4 4 0 010 8h-1"/>' +
+                        '<path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>' +
+                        '<line x1="6" y1="1" x2="6" y2="4"/>' +
+                        '<line x1="10" y1="1" x2="10" y2="4"/>' +
+                        '<line x1="14" y1="1" x2="14" y2="4"/>' +
+                    '</svg>' +
+                    '<p>لسه مفيش حاجة!</p>' +
+                    '<span>افتح المنيو واختار قهوتك المفضلة</span>' +
+                '</div>';
             cartFooter.style.display = 'none';
+            if (summaryEl) summaryEl.innerHTML = '';
             return;
         }
 
         cartFooter.style.display = 'block';
         let html = '';
+
         cart.forEach((item, idx) => {
-            html += `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <span class="cart-item-name">${item.name}</span>
-                        <span class="cart-item-qty">${item.qty} × ${item.count}</span>
-                    </div>
-                    <div class="cart-item-controls">
-                        <button class="cart-count-btn" data-idx="${idx}" data-action="minus">−</button>
-                        <span class="cart-item-count">${item.count}</span>
-                        <button class="cart-count-btn" data-idx="${idx}" data-action="plus">+</button>
-                        <button class="cart-remove-btn" data-idx="${idx}">✕</button>
-                    </div>
-                </div>`;
+            html +=
+                '<div class="cart-item" data-idx="' + idx + '">' +
+                    '<div class="cart-item-row">' +
+                        '<div class="cart-item-img">' + coffeeSvg + '</div>' +
+                        '<div class="cart-item-info">' +
+                            '<span class="cart-item-name">' + item.name + '</span>' +
+                            '<span class="cart-item-qty">' + item.qty + '</span>' +
+                        '</div>' +
+                        '<div class="cart-item-controls">' +
+                            '<button class="cart-count-btn" data-idx="' + idx + '" data-action="minus">−</button>' +
+                            '<span class="cart-item-count" data-idx="' + idx + '">' + item.count + '</span>' +
+                            '<button class="cart-count-btn" data-idx="' + idx + '" data-action="plus">+</button>' +
+                            '<button class="cart-remove-btn" data-idx="' + idx + '">✕</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
         });
         cartItems.innerHTML = html;
+
+        const summaryEl = document.getElementById('cartSummary');
+        if (summaryEl) {
+            summaryEl.innerHTML =
+                '<div class="cart-summary-row cart-summary-total"><span>المجموع</span><span>' + cart.length + ' أصناف</span></div>';
+        }
 
         cartItems.querySelectorAll('.cart-count-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -494,6 +449,12 @@
                 }
                 saveCart();
                 renderCart();
+                const bumpEl = cartItems.querySelector('.cart-item-count[data-idx="' + idx + '"]');
+                if (bumpEl) {
+                    bumpEl.classList.remove('bump');
+                    void bumpEl.offsetWidth;
+                    bumpEl.classList.add('bump');
+                }
             });
         });
 
@@ -527,10 +488,10 @@
         cartWhatsapp.addEventListener('click', () => {
             let msg = 'مرحباً مَلَاذ 🙋\n\nأريد طلب:\n';
             cart.forEach(item => {
-                msg += `▪ ${item.name} — ${item.qty} × ${item.count}\n`;
+                msg += '▪ ' + item.name + ' — ' + item.qty + ' × ' + item.count + '\n';
             });
             msg += '\nالرجاء تأكيد الطلب والتوصيل.';
-            const url = `https://wa.me/201282256742?text=${encodeURIComponent(msg)}`;
+            const url = 'https://wa.me/201282256742?text=' + encodeURIComponent(msg);
             window.open(url, '_blank');
         });
     }

@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
    ────────────────────────────────────────────── */
 app.use(
   helmet({
-    /* allow the admin panel page opened locally (file://) to reach the API */
+    /* allow pages opened locally (file://) or from the site origin to reach the API */
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
@@ -51,7 +51,7 @@ const allowedOrigins = [
   // 'https://yourdomain.com',
 ];
 
-/* allow Private Network Access preflight (file:// admin page -> localhost) */
+/* allow Private Network Access preflight (file:// page -> localhost) */
 app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Private-Network', 'true');
@@ -85,8 +85,8 @@ app.use(
       } catch (_) { /* fallthrough */ }
       return cb(new Error('CORS not allowed'), false);
     },
-    methods:             ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders:      ['Content-Type', 'X-CSRF-Token', 'X-Admin-Token'],
+    methods:             ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders:      ['Content-Type', 'X-Requested-With'],
     credentials:         true,
     maxAge:              300,
   })
@@ -166,20 +166,6 @@ fs.mkdirSync(logDir, { recursive: true });
 const accessLog = fs.createWriteStream(path.join(logDir, 'access.log'), { flags: 'a' });
 app.use(morgan('combined', { stream: accessLog }));
 
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api/')) {
-    const token = req.headers['x-admin-token'];
-    accessLog.write(
-      '[API] ' + req.method + ' ' + req.path +
-      ' origin=' + (req.headers.origin || req.headers.referer || 'none') +
-      ' ua=' + (req.headers['user-agent'] || '').slice(0, 60) +
-      ' token=' + (token ? ('"' + token + '"') : 'MISSING') +
-      '\n'
-    );
-  }
-  next();
-});
-
 /* ──────────────────────────────────────────────
    9. SERVE STATIC FILES  (the website)
    ────────────────────────────────────────────── */
@@ -205,16 +191,14 @@ app.post(
   [
     body('name')
       .trim().notEmpty().withMessage('Name is required')
-      .isLength({ max: 100 }).withMessage('Name too long')
-      .escape(),
+      .isLength({ max: 100 }).withMessage('Name too long'),
     body('email')
       .trim().notEmpty().withMessage('Email is required')
       .isEmail().withMessage('Invalid email')
       .normalizeEmail(),
     body('message')
       .trim().notEmpty().withMessage('Message is required')
-      .isLength({ min: 10, max: 2000 }).withMessage('Message must be 10-2000 chars')
-      .escape(),
+      .isLength({ min: 10, max: 2000 }).withMessage('Message must be 10-2000 chars'),
   ],
   (req, res) => {
     const errors = validationResult(req);
@@ -247,20 +231,14 @@ app.get('/api/health', (req, res) => {
 });
 
 /* ──────────────────────────────────────────────
-   12. PRODUCTS API  –  admin CRUD
-   ────────────────────────────────────────────── */
-const productsApi = require('./products-api');
-app.use('/api/products', productsApi);
-
-/* ──────────────────────────────────────────────
-   13. 404  –  unknown routes
+   12. 404  –  unknown routes
    ────────────────────────────────────────────── */
 app.use((req, res) => {
   res.status(404).send('404 — Page not found');
 });
 
 /* ──────────────────────────────────────────────
-   14. GLOBAL ERROR HANDLER
+   13. GLOBAL ERROR HANDLER
    ────────────────────────────────────────────── */
 app.use((err, req, res, _next) => {
   console.error('[ERROR]', err.message);
