@@ -29,7 +29,7 @@ app.use(
       defaultSrc:  ["'self'"],
       scriptSrc:   ["'self'"],
       styleSrc:    ["'self'", "'unsafe-inline'"],
-      imgSrc:      ["'self'", "data:", "blob:"],
+      imgSrc:      ["'self'", "data:", "blob:", "https://flagcdn.com"],
       fontSrc:     ["'self'"],
       connectSrc:  ["'self'"],
       frameSrc:    ["'self'"],

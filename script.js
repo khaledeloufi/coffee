@@ -622,173 +622,8 @@
     el.textContent = quotes[quoteIndex];
 })();
 
-// --- Coffee Origins Map ---
+// --- Coffee Origins: Facts + Top Producers ---
 (function () {
-    const map = document.getElementById('originsMap');
-    if (!map) return;
-
-    // Zoom controls
-    const zoomArea = document.getElementById('mapZoomArea');
-    const zoomInBtn = document.getElementById('zoomIn');
-    const zoomOutBtn = document.getElementById('zoomOut');
-    const zoomResetBtn = document.getElementById('zoomReset');
-    let zoomLevel = 1;
-    let focusOnPoint = null;
-
-    if (zoomArea && zoomInBtn && zoomOutBtn && zoomResetBtn) {
-        let panX = 0, panY = 0;
-        let isDragging = false;
-        let startX, startY;
-        let startPanX, startPanY;
-
-        function applyTransform() {
-            zoomArea.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
-        }
-
-        function setZoom(level) {
-            zoomLevel = Math.min(3, Math.max(0.5, level));
-            if (zoomLevel <= 1) { panX = 0; panY = 0; }
-            applyTransform();
-        }
-
-        function clampPan() {
-            const maxPan = (zoomLevel - 1) * 200;
-            panX = Math.max(-maxPan, Math.min(maxPan, panX));
-            panY = Math.max(-maxPan, Math.min(maxPan, panY));
-        }
-
-        zoomInBtn.addEventListener('click', () => setZoom(zoomLevel + 0.25));
-        zoomOutBtn.addEventListener('click', () => setZoom(zoomLevel - 0.25));
-        zoomResetBtn.addEventListener('click', () => { panX = 0; panY = 0; setZoom(1); });
-
-        // Mouse drag
-        zoomArea.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            startPanX = panX;
-            startPanY = panY;
-            zoomArea.classList.add('dragging');
-            e.preventDefault();
-        });
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            panX = startPanX + (e.clientX - startX);
-            panY = startPanY + (e.clientY - startY);
-            clampPan();
-            applyTransform();
-        });
-        document.addEventListener('mouseup', () => {
-            if (isDragging) { isDragging = false; zoomArea.classList.remove('dragging'); }
-        });
-
-        // Touch drag
-        zoomArea.addEventListener('touchstart', (e) => {
-            if (e.touches.length !== 1) return;
-            isDragging = true;
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            startPanX = panX;
-            startPanY = panY;
-            zoomArea.classList.add('dragging');
-        }, { passive: true });
-        document.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            panX = startPanX + (e.touches[0].clientX - startX);
-            panY = startPanY + (e.touches[0].clientY - startY);
-            clampPan();
-            applyTransform();
-        }, { passive: true });
-        document.addEventListener('touchend', () => {
-            if (isDragging) { isDragging = false; zoomArea.classList.remove('dragging'); }
-        });
-
-        focusOnPoint = function (x, y, target) {
-            const svgEl = document.querySelector('.world-map-svg');
-            if (!svgEl || !svgEl.getScreenCTM || !svgEl.createSVGPoint) return;
-            const rect = map.getBoundingClientRect();
-            const pt = svgEl.createSVGPoint();
-            pt.x = x;
-            pt.y = y;
-            const ctm = svgEl.getScreenCTM();
-            if (!ctm) return;
-            const sp = pt.matrixTransform(ctm);
-            const pxX = sp.x - rect.left;
-            const pxY = sp.y - rect.top;
-            const cx = rect.width / 2, cy = rect.height / 2;
-            setZoom(target);
-            panX = cx - (pxX - cx) * target;
-            panY = cy - (pxY - cy) * target;
-            clampPan();
-            applyTransform();
-        };
-    }
-
-    // Filters
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (selectedOrigin) {
-                selectedOrigin = null;
-                document.querySelectorAll('.origin-chip').forEach(c => c.classList.remove('active'));
-                document.querySelectorAll('.bean-pin').forEach(p => {
-                    p.classList.remove('selected');
-                    p.style.opacity = '';
-                });
-                document.querySelectorAll('.bean-pin .pin-halo').forEach(h => h.remove());
-                map.classList.remove('has-selection');
-                document.querySelectorAll('g[data-continent].has-selected-continent').forEach(g => {
-                    g.classList.remove('has-selected-continent');
-                });
-                hideTag();
-            }
-            const group = btn.dataset.filter;
-            const value = btn.dataset.value;
-            document.querySelectorAll(`.filter-btn[data-filter="${group}"]`).forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            applyFilters();
-        });
-    });
-
-    function applyFilters() {
-        const continent = document.querySelector('.filter-btn[data-filter="continent"].active')?.dataset.value || 'all';
-        const bean = document.querySelector('.filter-btn[data-filter="bean"].active')?.dataset.value || 'all';
-
-        // Filter bean pins
-        document.querySelectorAll('.bean-pin').forEach(pin => {
-            const pinContinent = pin.dataset.continent;
-            const pinBean = pin.dataset.bean;
-            const matchContinent = continent === 'all' || pinContinent === continent;
-            const matchBean = bean === 'all' || pinBean === bean || pinBean === 'both';
-            pin.style.opacity = (matchContinent && matchBean) ? '1' : '0.1';
-            pin.style.transition = 'opacity 0.4s ease';
-        });
-
-        // Filter continent groups (these are sibling <g> elements, not parents of bean-pins)
-        const beanPins = document.querySelectorAll('.bean-pin');
-        document.querySelectorAll('g[data-continent]').forEach(group => {
-            if (group.classList.contains('bean-pin')) return;
-            const groupContinent = group.dataset.continent;
-
-            // Continent filter: dim non-matching continent groups
-            const matchContinent = continent === 'all' || groupContinent === continent;
-
-            // Bean filter: dim continent group if it has no matching bean pins
-            let matchBean = true;
-            if (bean !== 'all') {
-                const hasMatchingPin = Array.from(beanPins).some(pin => {
-                    const pc = pin.dataset.continent;
-                    const pb = pin.dataset.bean;
-                    return pc === groupContinent && (pb === bean || pb === 'both');
-                });
-                matchBean = hasMatchingPin;
-            }
-
-            group.style.opacity = (matchContinent && matchBean) ? '1' : '0.12';
-            group.style.transition = 'opacity 0.4s ease';
-        });
-    }
-
     // Quick Facts rotation
     const facts = document.querySelectorAll('.quick-facts .fact');
     if (facts.length > 0) {
@@ -800,25 +635,25 @@
         }, 3500);
     }
 
-    // Production Ranking — circular rings
+    // Top 10 producers — circular rings with info under each flag
     const rankingContainer = document.getElementById('rankingBars');
     if (rankingContainer) {
         const countries = [
-            { name: 'البرازيل', code: 'br', rank: 1, production: '3.7M طن', pct: 100 },
-            { name: 'فيتنام', code: 'vn', rank: 2, production: '1.8M طن', pct: 49 },
-            { name: 'كولومبيا', code: 'co', rank: 3, production: '800K طن', pct: 22 },
-            { name: 'إندونيسيا', code: 'id', rank: 4, production: '700K طن', pct: 19 },
-            { name: 'إثيوبيا', code: 'et', rank: 5, production: '600K طن', pct: 16 },
-            { name: 'هندوراس', code: 'hn', rank: 6, production: '400K طن', pct: 11 },
-            { name: 'الهند', code: 'in', rank: 7, production: '350K طن', pct: 9 },
-            { name: 'أوغندا', code: 'ug', rank: 8, production: '300K طن', pct: 8 },
-            { name: 'المكسيك', code: 'mx', rank: 9, production: '250K طن', pct: 7 },
-            { name: 'بيرو', code: 'pe', rank: 10, production: '200K طن', pct: 5 },
+            { name: 'البرازيل',  code: 'br', rank: 1,  production: '3.7M طن', pct: 100, bean: 'both',    beanLabel: 'أرابيكا + روبيستا', region: 'أمريكا الجنوبية', flavor: 'شوكولاتة وجوز' },
+            { name: 'فيتنام',    code: 'vn', rank: 2,  production: '1.8M طن', pct: 49,  bean: 'robusta', beanLabel: 'روبيستا',        region: 'جنوب شرق آسيا',  flavor: 'قوية ومرارة لطيفة' },
+            { name: 'كولومبيا',  code: 'co', rank: 3,  production: '800K طن', pct: 22,  bean: 'arabica', beanLabel: 'أرابيكا',        region: 'أمريكا الجنوبية', flavor: 'كراميل وحموضة حلوة' },
+            { name: 'إندونيسيا', code: 'id', rank: 4,  production: '700K طن', pct: 19,  bean: 'both',    beanLabel: 'أرابيكا + روبيستا', region: 'جنوب شرق آسيا',  flavor: 'ترابية وتوابل خشبية' },
+            { name: 'إثيوبيا',   code: 'et', rank: 5,  production: '600K طن', pct: 16,  bean: 'arabica', beanLabel: 'أرابيكا',        region: 'شرق أفريقيا',    flavor: 'زهرية وفواكه — مهد القهوة' },
+            { name: 'هندوراس',   code: 'hn', rank: 6,  production: '400K طن', pct: 11,  bean: 'arabica', beanLabel: 'أرابيكا',        region: 'أمريكا الوسطى',  flavor: 'فواكه استوائية حلوة' },
+            { name: 'الهند',     code: 'in', rank: 7,  production: '350K طن', pct: 9,   bean: 'both',    beanLabel: 'أرابيكا + روبيستا', region: 'جنوب آسيا',      flavor: 'توابل ولمسة جوز هند' },
+            { name: 'أوغندا',    code: 'ug', rank: 8,  production: '300K طن', pct: 8,   bean: 'robusta', beanLabel: 'روبيستا',        region: 'شرق أفريقيا',    flavor: 'شوكولاتة داكنة قوية' },
+            { name: 'المكسيك',   code: 'mx', rank: 9,  production: '250K طن', pct: 7,   bean: 'arabica', beanLabel: 'أرابيكا',        region: 'أمريكا الشمالية', flavor: 'خفيفة بلمسة كراميل' },
+            { name: 'بيرو',      code: 'pe', rank: 10, production: '200K طن', pct: 5,   bean: 'arabica', beanLabel: 'أرابيكا',        region: 'أمريكا الجنوبية', flavor: 'ناعمة ومتوازنة' }
         ];
         const r = 42, circ = 2 * Math.PI * r;
         rankingContainer.innerHTML = countries.map((c, i) => {
             const offset = circ - (c.pct / 100) * circ;
-            const size = c.rank <= 3 ? 140 : c.rank <= 6 ? 120 : 105;
+            const size = c.rank <= 3 ? 150 : c.rank <= 6 ? 130 : 115;
             return `
             <div class="rank-ring" style="animation-delay: ${i * 0.1}s; --ring-size: ${size}px">
                 <div class="rank-ring-svg">
@@ -835,6 +670,9 @@
                 </div>
                 <div class="rank-ring-name">${c.name}</div>
                 <div class="rank-ring-prod">${c.production}</div>
+                <div class="rank-ring-bean bean-${c.bean}">${c.beanLabel}</div>
+                <div class="rank-ring-region">${c.region}</div>
+                <div class="rank-ring-flavor">${c.flavor}</div>
             </div>`;
         }).join('');
 
@@ -850,193 +688,7 @@
         }, { threshold: 0.25 });
         obs.observe(rankingContainer);
     }
-
-    // Origins selector chips + on-map tag
-    const ORIGINS = [
-        { id: 'br', name: 'البرازيل',      flag: '🇧🇷', continent: 'americas', bean: 'both',    x: 455,  y: 610, note: 'أكبر منتج في العالم — نكهة شوكولاتة وجوز' },
-        { id: 'co', name: 'كولومبيا',      flag: '🇨🇴', continent: 'americas', bean: 'arabica', x: 380,  y: 540, note: 'أرابيكا ناعمة ولمّاعة النكهة' },
-        { id: 'et', name: 'إثيوبيا',       flag: '🇪🇹', continent: 'africa',   bean: 'arabica', x: 1050, y: 425, note: 'مهد القهوة — نكهة زهرية وفواكه' },
-        { id: 'ke', name: 'كينيا',         flag: '🇰🇪', continent: 'africa',   bean: 'arabica', x: 1060, y: 460, note: 'حموضة برّاقة تشبه التوت' },
-        { id: 'vn', name: 'فيتنام',        flag: '🇻🇳', continent: 'asia',     bean: 'robusta', x: 1395, y: 375, note: 'ثاني أكبر منتج — قوي وغني' },
-        { id: 'id', name: 'إندونيسيا',     flag: '🇮🇩', continent: 'asia',     bean: 'both',    x: 1445, y: 565, note: 'نكهة ترابية وحارّة' },
-        { id: 'in', name: 'الهند',         flag: '🇮🇳', continent: 'asia',     bean: 'both',    x: 1235, y: 435, note: 'نكهة توابل مع لمسة جوز الهند' },
-        { id: 'gt', name: 'غواتيمالا',     flag: '🇬🇹', continent: 'americas', bean: 'arabica', x: 305,  y: 455, note: 'ناعمة بشوكولاتة ونكهات جبلية' },
-        { id: 'mx', name: 'المكسيك',       flag: '🇲🇽', continent: 'americas', bean: 'arabica', x: 265,  y: 395, note: 'نكهة خفيفة مع لمسة كراميل' },
-        { id: 'pe', name: 'بيرو',          flag: '🇵🇪', continent: 'americas', bean: 'arabica', x: 370,  y: 605, note: 'ناعمة ومتوازنة بحمض لطيف' },
-        { id: 'hn', name: 'هندوراس',       flag: '🇭🇳', continent: 'americas', bean: 'arabica', x: 320,  y: 440, note: 'حلوة بلمسات فواكه استوائية' },
-        { id: 'ug', name: 'أوغندا',        flag: '🇺🇬', continent: 'africa',   bean: 'robusta', x: 1035, y: 455, note: 'روبيستا قوي بلمسة شوكولاتة' },
-        { id: 'tz', name: 'تنزانيا',       flag: '🇹🇿', continent: 'africa',   bean: 'arabica', x: 1050, y: 500, note: 'نكهة مشرقة مع توت أسود' },
-        { id: 'rw', name: 'رواندا',        flag: '🇷🇼', continent: 'africa',   bean: 'arabica', x: 1020, y: 473, note: 'نكهة معقّدة بلمسة زهرية' },
-        { id: 'ye', name: 'اليمن',         flag: '🇾🇪', continent: 'asia',     bean: 'arabica', x: 1140, y: 445, note: 'أصل الموكا — نكهة عنبرية وغنية' }
-    ];
-
-    const grid = document.getElementById('originsGrid');
-    const tag = document.getElementById('mapOriginTag');
-    const tagFlag = document.getElementById('mapOriginTagFlag');
-    const tagName = document.getElementById('mapOriginTagName');
-    const worldSvg = document.querySelector('.world-map-svg');
-    let selectedOrigin = null;
-
-    function renderChips() {
-        if (!grid) return;
-        grid.innerHTML = ORIGINS.map(o => {
-            const beanLabel = o.bean === 'arabica' ? 'أرابيكا' : o.bean === 'robusta' ? 'روبيستا' : 'أرابيكا + روبيستا';
-            return `
-            <button class="origin-chip" data-id="${o.id}" data-bean="${o.bean}" title="${o.note}">
-                <span class="chip-flag">${o.flag}</span>
-                <span class="chip-info">
-                    <span class="chip-name">${o.name}</span>
-                    <span class="chip-type">${beanLabel}</span>
-                </span>
-            </button>`;
-        }).join('');
-    }
-
-    function positionTag(o) {
-        if (!tag || !worldSvg || !worldSvg.getScreenCTM || !worldSvg.createSVGPoint) return;
-        const pt = worldSvg.createSVGPoint();
-        pt.x = o.x;
-        pt.y = o.y;
-        const ctm = worldSvg.getScreenCTM();
-        if (!ctm) return;
-        const sp = pt.matrixTransform(ctm);
-        const mapRect = map.getBoundingClientRect();
-        tag.style.left = (sp.x - mapRect.left) + 'px';
-        tag.style.top = (sp.y - mapRect.top) + 'px';
-    }
-
-    function showTag(o) {
-        if (!tag) return;
-        tagFlag.textContent = o.flag;
-        tagName.textContent = o.name;
-        const tagType = document.getElementById('mapOriginTagType');
-        if (tagType) {
-            tagType.textContent = o.bean === 'arabica' ? 'أرابيكا' : o.bean === 'robusta' ? 'روبيستا' : 'أرابيكا + روبيستا';
-            tagType.dataset.bean = o.bean;
-        }
-        positionTag(o);
-        tag.classList.add('show');
-    }
-
-    function hideTag() {
-        if (tag) tag.classList.remove('show');
-    }
-
-    function syncFilterBtns(continent, bean) {
-        document.querySelectorAll('.filter-btn[data-filter="continent"]').forEach(b => {
-            b.classList.toggle('active', b.dataset.value === continent);
-        });
-        document.querySelectorAll('.filter-btn[data-filter="bean"]').forEach(b => {
-            b.classList.toggle('active', b.dataset.value === (bean === 'both' ? 'all' : bean));
-        });
-    }
-
-    function selectOrigin(id) {
-        const origin = ORIGINS.find(o => o.id === id);
-        if (!origin) return;
-        selectedOrigin = id;
-
-        document.querySelectorAll('.origin-chip').forEach(c => {
-            c.classList.toggle('active', c.dataset.id === id);
-        });
-
-        syncFilterBtns(origin.continent, origin.bean);
-
-        // remove any residual inline opacities so focus mode CSS takes over
-        document.querySelectorAll('.bean-pin').forEach(p => {
-            p.style.opacity = '';
-            p.style.transition = 'opacity 0.4s ease';
-        });
-        document.querySelectorAll('g[data-continent]').forEach(g => {
-            if (g.classList.contains('bean-pin')) return;
-            g.style.opacity = '';
-        });
-
-        // hybrid halo ring on the selected pin
-        document.querySelectorAll('.bean-pin.selected .pin-halo').forEach(h => h.remove());
-        document.querySelectorAll('.bean-pin').forEach(p => {
-            const isSel = p.dataset.origin === id;
-            p.classList.toggle('selected', isSel);
-            if (isSel && worldSvg) {
-                const halo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                halo.setAttribute('cx', '0');
-                halo.setAttribute('cy', '0');
-                halo.setAttribute('r', '16');
-                halo.setAttribute('class', 'pin-halo');
-                p.insertBefore(halo, p.firstChild);
-            }
-        });
-
-        map.classList.add('has-selection');
-        document.querySelectorAll('g[data-continent]').forEach(g => {
-            if (g.classList.contains('bean-pin')) return;
-            g.classList.toggle('has-selected-continent', g.dataset.continent === origin.continent);
-        });
-
-        showTag(origin);
-        if (focusOnPoint) focusOnPoint(origin.x, origin.y, 1.8);
-    }
-
-    function clearSelection() {
-        selectedOrigin = null;
-        document.querySelectorAll('.origin-chip').forEach(c => c.classList.remove('active'));
-        syncFilterBtns('all', 'all');
-        document.querySelectorAll('.bean-pin').forEach(p => {
-            p.classList.remove('selected');
-            p.style.opacity = '';
-        });
-        document.querySelectorAll('.bean-pin .pin-halo').forEach(h => h.remove());
-        map.classList.remove('has-selection');
-        document.querySelectorAll('g[data-continent].has-selected-continent').forEach(g => {
-            g.classList.remove('has-selected-continent');
-        });
-        hideTag();
-    }
-
-    renderChips();
-
-    if (grid) {
-        grid.addEventListener('click', (e) => {
-            const chip = e.target.closest('.origin-chip');
-            if (!chip) return;
-            if (selectedOrigin === chip.dataset.id) {
-                clearSelection();
-            } else {
-                selectOrigin(chip.dataset.id);
-            }
-        });
-    }
-
-    document.querySelectorAll('.bean-pin').forEach(pin => {
-        const o = ORIGINS.find(o => o.id === pin.dataset.origin);
-        if (!o) return;
-        pin.addEventListener('mousedown', (e) => e.stopPropagation());
-        pin.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
-        pin.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (selectedOrigin === o.id) {
-                clearSelection();
-            } else {
-                selectOrigin(o.id);
-            }
-        });
-        pin.addEventListener('mouseenter', () => {
-            if (selectedOrigin !== o.id) showTag(o);
-        });
-        pin.addEventListener('mouseleave', () => {
-            if (selectedOrigin !== o.id) hideTag();
-        });
-    });
-
-    window.addEventListener('resize', () => {
-        if (selectedOrigin) {
-            const o = ORIGINS.find(o => o.id === selectedOrigin);
-            if (o) positionTag(o);
-        }
-    });
-})();
-
-// --- Coffee Preparation Steps Animation ---
+})();// --- Coffee Preparation Steps Animation ---
 (function () {
     const steps = document.querySelectorAll('.cs-step');
     const dots = document.querySelectorAll('.step-dot');
