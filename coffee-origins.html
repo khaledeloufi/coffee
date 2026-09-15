@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مَلَاذ | أصل القهوة</title>
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
     <div class="loading-screen" id="loadingScreen">
@@ -127,6 +127,15 @@
                 </div>
             </div>
 
+            <!-- Origins Selector -->
+            <div class="origins-grid reveal">
+                <div class="origins-grid-head">
+                    <span class="og-title">اختر دولة البن</span>
+                    <span class="og-sub">اضغط على الدولة لتظهر على الخريطة</span>
+                </div>
+                <div class="origins-grid-list" id="originsGrid"></div>
+            </div>
+
             <!-- Map -->
             <div class="origins-map-wrapper reveal">
                 <div class="coffee-belt-label">خط الاستواء ☀️</div>
@@ -138,6 +147,10 @@
                         <button class="map-zoom-btn" id="zoomOut" title="تصغير">−</button>
                     </div>
                     <div class="map-zoom-area" id="mapZoomArea">
+                    <div class="map-origin-tag" id="mapOriginTag">
+                        <span class="mot-flag" id="mapOriginTagFlag"></span>
+                        <span class="mot-name" id="mapOriginTagName"></span>
+                    </div>
                     <svg class="world-map-svg" viewBox="0 0 2000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <!-- Background -->
                         <rect width="2000" height="1000" fill="#1a1a2e"/>
@@ -248,91 +261,91 @@
                         <!-- Coffee producing countries - Bean Pins -->
                         <g class="coffee-beans">
                             <!-- Brazil -->
-                            <g class="bean-pin" data-continent="americas" data-bean="both" transform="translate(455,610)">
+                            <g class="bean-pin" data-continent="americas" data-bean="both" data-origin="br" transform="translate(455,610)">
                                 <ellipse cx="0" cy="0" rx="12" ry="8" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-7 Q-2,0 0,7" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="455,610;455,606;455,610" dur="2s" repeatCount="indefinite"/>
                             </g>
                             <!-- Colombia -->
-                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(380,540)">
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" data-origin="co" transform="translate(380,540)">
                                 <ellipse cx="0" cy="0" rx="10" ry="7" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-6 Q-2,0 0,6" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="380,540;380,536;380,540" dur="2.2s" repeatCount="indefinite"/>
                             </g>
                             <!-- Ethiopia -->
-                            <g class="bean-pin" data-continent="africa" data-bean="arabica" transform="translate(1050,425)">
+                            <g class="bean-pin" data-continent="africa" data-bean="arabica" data-origin="et" transform="translate(1050,425)">
                                 <ellipse cx="0" cy="0" rx="10" ry="7" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-6 Q-2,0 0,6" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1050,425;1050,421;1050,425" dur="2.4s" repeatCount="indefinite"/>
                             </g>
                             <!-- Kenya -->
-                            <g class="bean-pin" data-continent="africa" data-bean="arabica" transform="translate(1060,460)">
+                            <g class="bean-pin" data-continent="africa" data-bean="arabica" data-origin="ke" transform="translate(1060,460)">
                                 <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1060,460;1060,456;1060,460" dur="2.6s" repeatCount="indefinite"/>
                             </g>
                             <!-- Vietnam -->
-                            <g class="bean-pin" data-continent="asia" data-bean="robusta" transform="translate(1395,375)">
+                            <g class="bean-pin" data-continent="asia" data-bean="robusta" data-origin="vn" transform="translate(1395,375)">
                                 <ellipse cx="0" cy="0" rx="10" ry="7" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-6 Q-2,0 0,6" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1395,375;1395,371;1395,375" dur="2.3s" repeatCount="indefinite"/>
                             </g>
                             <!-- Indonesia -->
-                            <g class="bean-pin" data-continent="asia" data-bean="both" transform="translate(1445,565)">
+                            <g class="bean-pin" data-continent="asia" data-bean="both" data-origin="id" transform="translate(1445,565)">
                                 <ellipse cx="0" cy="0" rx="10" ry="7" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-6 Q-2,0 0,6" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1445,565;1445,561;1445,565" dur="2.5s" repeatCount="indefinite"/>
                             </g>
                             <!-- India -->
-                            <g class="bean-pin" data-continent="asia" data-bean="both" transform="translate(1235,435)">
+                            <g class="bean-pin" data-continent="asia" data-bean="both" data-origin="in" transform="translate(1235,435)">
                                 <ellipse cx="0" cy="0" rx="9" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1235,435;1235,431;1235,435" dur="2.7s" repeatCount="indefinite"/>
                             </g>
                             <!-- Guatemala -->
-                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(305,455)">
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" data-origin="gt" transform="translate(305,455)">
                                 <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="305,455;305,451;305,455" dur="2.8s" repeatCount="indefinite"/>
                             </g>
                             <!-- Mexico -->
-                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(265,395)">
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" data-origin="mx" transform="translate(265,395)">
                                 <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="265,395;265,391;265,395" dur="2.9s" repeatCount="indefinite"/>
                             </g>
                             <!-- Peru -->
-                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(370,605)">
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" data-origin="pe" transform="translate(370,605)">
                                 <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="370,605;370,601;370,605" dur="3s" repeatCount="indefinite"/>
                             </g>
                             <!-- Honduras -->
-                            <g class="bean-pin" data-continent="americas" data-bean="arabica" transform="translate(320,440)">
+                            <g class="bean-pin" data-continent="americas" data-bean="arabica" data-origin="hn" transform="translate(320,440)">
                                 <ellipse cx="0" cy="0" rx="7" ry="5" fill="#6b3a1f" stroke="#d4a574" stroke-width="0.8"/>
                                 <path d="M0,-4 Q-2,0 0,4" stroke="#d4a574" stroke-width="0.6" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="320,440;320,437;320,440" dur="3.1s" repeatCount="indefinite"/>
                             </g>
                             <!-- Uganda -->
-                            <g class="bean-pin" data-continent="africa" data-bean="robusta" transform="translate(1035,455)">
+                            <g class="bean-pin" data-continent="africa" data-bean="robusta" data-origin="ug" transform="translate(1035,455)">
                                 <ellipse cx="0" cy="0" rx="7" ry="5" fill="#6b3a1f" stroke="#d4a574" stroke-width="0.8"/>
                                 <path d="M0,-4 Q-2,0 0,4" stroke="#d4a574" stroke-width="0.6" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1035,455;1035,452;1035,455" dur="3.2s" repeatCount="indefinite"/>
                             </g>
                             <!-- Tanzania -->
-                            <g class="bean-pin" data-continent="africa" data-bean="arabica" transform="translate(1050,500)">
+                            <g class="bean-pin" data-continent="africa" data-bean="arabica" data-origin="tz" transform="translate(1050,500)">
                                 <ellipse cx="0" cy="0" rx="7" ry="5" fill="#6b3a1f" stroke="#d4a574" stroke-width="0.8"/>
                                 <path d="M0,-4 Q-2,0 0,4" stroke="#d4a574" stroke-width="0.6" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1050,500;1050,497;1050,500" dur="3.3s" repeatCount="indefinite"/>
                             </g>
                             <!-- Rwanda -->
-                            <g class="bean-pin" data-continent="africa" data-bean="arabica" transform="translate(1020,473)">
+                            <g class="bean-pin" data-continent="africa" data-bean="arabica" data-origin="rw" transform="translate(1020,473)">
                                 <ellipse cx="0" cy="0" rx="6" ry="4.5" fill="#6b3a1f" stroke="#d4a574" stroke-width="0.8"/>
                                 <path d="M0,-3.5 Q-2,0 0,3.5" stroke="#d4a574" stroke-width="0.6" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1020,473;1020,470;1020,473" dur="3.4s" repeatCount="indefinite"/>
                             </g>
                             <!-- Yemen -->
-                            <g class="bean-pin" data-continent="asia" data-bean="arabica" transform="translate(1140,445)">
+                            <g class="bean-pin" data-continent="asia" data-bean="arabica" data-origin="ye" transform="translate(1140,445)">
                                 <ellipse cx="0" cy="0" rx="8" ry="6" fill="#6b3a1f" stroke="#d4a574" stroke-width="1"/>
                                 <path d="M0,-5 Q-2,0 0,5" stroke="#d4a574" stroke-width="0.8" fill="none"/>
                                 <animateTransform attributeName="transform" type="translate" values="1140,445;1140,441;1140,445" dur="2.1s" repeatCount="indefinite"/>
@@ -387,6 +400,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=6"></script>
+    <script src="script.js?v=7"></script>
 </body>
 </html>

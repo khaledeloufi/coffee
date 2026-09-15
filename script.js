@@ -633,6 +633,7 @@
     const zoomOutBtn = document.getElementById('zoomOut');
     const zoomResetBtn = document.getElementById('zoomReset');
     let zoomLevel = 1;
+    let focusOnPoint = null;
 
     if (zoomArea && zoomInBtn && zoomOutBtn && zoomResetBtn) {
         let panX = 0, panY = 0;
@@ -701,6 +702,26 @@
         document.addEventListener('touchend', () => {
             if (isDragging) { isDragging = false; zoomArea.classList.remove('dragging'); }
         });
+
+        focusOnPoint = function (x, y, target) {
+            const svgEl = document.querySelector('.world-map-svg');
+            if (!svgEl || !svgEl.getScreenCTM || !svgEl.createSVGPoint) return;
+            const rect = map.getBoundingClientRect();
+            const pt = svgEl.createSVGPoint();
+            pt.x = x;
+            pt.y = y;
+            const ctm = svgEl.getScreenCTM();
+            if (!ctm) return;
+            const sp = pt.matrixTransform(ctm);
+            const pxX = sp.x - rect.left;
+            const pxY = sp.y - rect.top;
+            const cx = rect.width / 2, cy = rect.height / 2;
+            setZoom(target);
+            panX = cx - (pxX - cx) * target;
+            panY = cy - (pxY - cy) * target;
+            clampPan();
+            applyTransform();
+        };
     }
 
     // Filters
@@ -815,6 +836,168 @@
         }, { threshold: 0.25 });
         obs.observe(rankingContainer);
     }
+
+    // Origins selector chips + on-map tag
+    const ORIGINS = [
+        { id: 'br', name: 'البرازيل',      flag: '🇧🇷', continent: 'americas', bean: 'both',    x: 455,  y: 610, note: 'أكبر منتج في العالم — نكهة شوكولاتة وجوز' },
+        { id: 'co', name: 'كولومبيا',      flag: '🇨🇴', continent: 'americas', bean: 'arabica', x: 380,  y: 540, note: 'أرابيكا ناعمة ولمّاعة النكهة' },
+        { id: 'et', name: 'إثيوبيا',       flag: '🇪🇹', continent: 'africa',   bean: 'arabica', x: 1050, y: 425, note: 'مهد القهوة — نكهة زهرية وفواكه' },
+        { id: 'ke', name: 'كينيا',         flag: '🇰🇪', continent: 'africa',   bean: 'arabica', x: 1060, y: 460, note: 'حموضة برّاقة تشبه التوت' },
+        { id: 'vn', name: 'فيتنام',        flag: '🇻🇳', continent: 'asia',     bean: 'robusta', x: 1395, y: 375, note: 'ثاني أكبر منتج — قوي وغني' },
+        { id: 'id', name: 'إندونيسيا',     flag: '🇮🇩', continent: 'asia',     bean: 'both',    x: 1445, y: 565, note: 'نكهة ترابية وحارّة' },
+        { id: 'in', name: 'الهند',         flag: '🇮🇳', continent: 'asia',     bean: 'both',    x: 1235, y: 435, note: 'نكهة توابل مع لمسة جوز الهند' },
+        { id: 'gt', name: 'غواتيمالا',     flag: '🇬🇹', continent: 'americas', bean: 'arabica', x: 305,  y: 455, note: 'ناعمة بشوكولاتة ونكهات جبلية' },
+        { id: 'mx', name: 'المكسيك',       flag: '🇲🇽', continent: 'americas', bean: 'arabica', x: 265,  y: 395, note: 'نكهة خفيفة مع لمسة كراميل' },
+        { id: 'pe', name: 'بيرو',          flag: '🇵🇪', continent: 'americas', bean: 'arabica', x: 370,  y: 605, note: 'ناعمة ومتوازنة بحمض لطيف' },
+        { id: 'hn', name: 'هندوراس',       flag: '🇭🇳', continent: 'americas', bean: 'arabica', x: 320,  y: 440, note: 'حلوة بلمسات فواكه استوائية' },
+        { id: 'ug', name: 'أوغندا',        flag: '🇺🇬', continent: 'africa',   bean: 'robusta', x: 1035, y: 455, note: 'روبيستا قوي بلمسة شوكولاتة' },
+        { id: 'tz', name: 'تنزانيا',       flag: '🇹🇿', continent: 'africa',   bean: 'arabica', x: 1050, y: 500, note: 'نكهة مشرقة مع توت أسود' },
+        { id: 'rw', name: 'رواندا',        flag: '🇷🇼', continent: 'africa',   bean: 'arabica', x: 1020, y: 473, note: 'نكهة معقّدة بلمسة زهرية' },
+        { id: 'ye', name: 'اليمن',         flag: '🇾🇪', continent: 'asia',     bean: 'arabica', x: 1140, y: 445, note: 'أصل الموكا — نكهة عنبرية وغنية' }
+    ];
+
+    const grid = document.getElementById('originsGrid');
+    const tag = document.getElementById('mapOriginTag');
+    const tagFlag = document.getElementById('mapOriginTagFlag');
+    const tagName = document.getElementById('mapOriginTagName');
+    const worldSvg = document.querySelector('.world-map-svg');
+    let selectedOrigin = null;
+
+    function renderChips() {
+        if (!grid) return;
+        grid.innerHTML = ORIGINS.map(o => {
+            const beanLabel = o.bean === 'arabica' ? 'أرابيكا' : o.bean === 'robusta' ? 'روبيستا' : 'أرابيكا + روبيستا';
+            return `
+            <button class="origin-chip" data-id="${o.id}" title="${o.note}">
+                <span class="chip-flag">${o.flag}</span>
+                <span class="chip-info">
+                    <span class="chip-name">${o.name}</span>
+                    <span class="chip-type">${beanLabel}</span>
+                </span>
+            </button>`;
+        }).join('');
+    }
+
+    function positionTag(o) {
+        if (!tag || !worldSvg || !worldSvg.getScreenCTM || !worldSvg.createSVGPoint) return;
+        const pt = worldSvg.createSVGPoint();
+        pt.x = o.x;
+        pt.y = o.y;
+        const ctm = worldSvg.getScreenCTM();
+        if (!ctm) return;
+        const sp = pt.matrixTransform(ctm);
+        const mapRect = map.getBoundingClientRect();
+        tag.style.left = (sp.x - mapRect.left) + 'px';
+        tag.style.top = (sp.y - mapRect.top) + 'px';
+    }
+
+    function showTag(o) {
+        if (!tag) return;
+        tagFlag.textContent = o.flag;
+        tagName.textContent = o.name;
+        positionTag(o);
+        tag.classList.add('show');
+    }
+
+    function hideTag() {
+        if (tag) tag.classList.remove('show');
+    }
+
+    function syncFilterBtns(continent, bean) {
+        document.querySelectorAll('.filter-btn[data-filter="continent"]').forEach(b => {
+            b.classList.toggle('active', b.dataset.value === continent);
+        });
+        document.querySelectorAll('.filter-btn[data-filter="bean"]').forEach(b => {
+            b.classList.toggle('active', b.dataset.value === (bean === 'both' ? 'all' : bean));
+        });
+    }
+
+    function selectOrigin(id) {
+        const origin = ORIGINS.find(o => o.id === id);
+        if (!origin) return;
+        selectedOrigin = id;
+
+        document.querySelectorAll('.origin-chip').forEach(c => {
+            c.classList.toggle('active', c.dataset.id === id);
+        });
+
+        syncFilterBtns(origin.continent, origin.bean);
+        applyFilters();
+
+        document.querySelectorAll('.bean-pin').forEach(p => {
+            const isSel = p.dataset.origin === id;
+            p.classList.toggle('selected', isSel);
+            p.style.opacity = isSel ? '1' : '0.15';
+            p.style.transition = 'opacity 0.4s ease';
+        });
+
+        map.classList.add('has-selection');
+        document.querySelectorAll('g[data-continent]').forEach(g => {
+            if (g.classList.contains('bean-pin')) return;
+            g.classList.toggle('has-selected-continent', g.dataset.continent === origin.continent);
+        });
+
+        showTag(origin);
+        if (focusOnPoint) focusOnPoint(origin.x, origin.y, 1.6);
+    }
+
+    function clearSelection() {
+        selectedOrigin = null;
+        document.querySelectorAll('.origin-chip').forEach(c => c.classList.remove('active'));
+        syncFilterBtns('all', 'all');
+        applyFilters();
+        document.querySelectorAll('.bean-pin').forEach(p => {
+            p.classList.remove('selected');
+            p.style.opacity = '';
+        });
+        map.classList.remove('has-selection');
+        document.querySelectorAll('g[data-continent].has-selected-continent').forEach(g => {
+            g.classList.remove('has-selected-continent');
+        });
+        hideTag();
+    }
+
+    renderChips();
+
+    if (grid) {
+        grid.addEventListener('click', (e) => {
+            const chip = e.target.closest('.origin-chip');
+            if (!chip) return;
+            if (selectedOrigin === chip.dataset.id) {
+                clearSelection();
+            } else {
+                selectOrigin(chip.dataset.id);
+            }
+        });
+    }
+
+    document.querySelectorAll('.bean-pin').forEach(pin => {
+        const o = ORIGINS.find(o => o.id === pin.dataset.origin);
+        if (!o) return;
+        pin.addEventListener('mousedown', (e) => e.stopPropagation());
+        pin.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+        pin.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (selectedOrigin === o.id) {
+                clearSelection();
+            } else {
+                selectOrigin(o.id);
+            }
+        });
+        pin.addEventListener('mouseenter', () => {
+            if (selectedOrigin !== o.id) showTag(o);
+        });
+        pin.addEventListener('mouseleave', () => {
+            if (selectedOrigin !== o.id) hideTag();
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        if (selectedOrigin) {
+            const o = ORIGINS.find(o => o.id === selectedOrigin);
+            if (o) positionTag(o);
+        }
+    });
 })();
 
 // --- Coffee Preparation Steps Animation ---
