@@ -728,6 +728,20 @@
     const filterBtns = document.querySelectorAll('.filter-btn');
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            if (selectedOrigin) {
+                selectedOrigin = null;
+                document.querySelectorAll('.origin-chip').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.bean-pin').forEach(p => {
+                    p.classList.remove('selected');
+                    p.style.opacity = '';
+                });
+                document.querySelectorAll('.bean-pin .pin-halo').forEach(h => h.remove());
+                map.classList.remove('has-selection');
+                document.querySelectorAll('g[data-continent].has-selected-continent').forEach(g => {
+                    g.classList.remove('has-selected-continent');
+                });
+                hideTag();
+            }
             const group = btn.dataset.filter;
             const value = btn.dataset.value;
             document.querySelectorAll(`.filter-btn[data-filter="${group}"]`).forEach(b => b.classList.remove('active'));
@@ -868,7 +882,7 @@
         grid.innerHTML = ORIGINS.map(o => {
             const beanLabel = o.bean === 'arabica' ? 'أرابيكا' : o.bean === 'robusta' ? 'روبيستا' : 'أرابيكا + روبيستا';
             return `
-            <button class="origin-chip" data-id="${o.id}" title="${o.note}">
+            <button class="origin-chip" data-id="${o.id}" data-bean="${o.bean}" title="${o.note}">
                 <span class="chip-flag">${o.flag}</span>
                 <span class="chip-info">
                     <span class="chip-name">${o.name}</span>
@@ -895,6 +909,11 @@
         if (!tag) return;
         tagFlag.textContent = o.flag;
         tagName.textContent = o.name;
+        const tagType = document.getElementById('mapOriginTagType');
+        if (tagType) {
+            tagType.textContent = o.bean === 'arabica' ? 'أرابيكا' : o.bean === 'robusta' ? 'روبيستا' : 'أرابيكا + روبيستا';
+            tagType.dataset.bean = o.bean;
+        }
         positionTag(o);
         tag.classList.add('show');
     }
@@ -922,13 +941,30 @@
         });
 
         syncFilterBtns(origin.continent, origin.bean);
-        applyFilters();
 
+        // remove any residual inline opacities so focus mode CSS takes over
+        document.querySelectorAll('.bean-pin').forEach(p => {
+            p.style.opacity = '';
+            p.style.transition = 'opacity 0.4s ease';
+        });
+        document.querySelectorAll('g[data-continent]').forEach(g => {
+            if (g.classList.contains('bean-pin')) return;
+            g.style.opacity = '';
+        });
+
+        // hybrid halo ring on the selected pin
+        document.querySelectorAll('.bean-pin.selected .pin-halo').forEach(h => h.remove());
         document.querySelectorAll('.bean-pin').forEach(p => {
             const isSel = p.dataset.origin === id;
             p.classList.toggle('selected', isSel);
-            p.style.opacity = isSel ? '1' : '0.15';
-            p.style.transition = 'opacity 0.4s ease';
+            if (isSel && worldSvg) {
+                const halo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                halo.setAttribute('cx', '0');
+                halo.setAttribute('cy', '0');
+                halo.setAttribute('r', '16');
+                halo.setAttribute('class', 'pin-halo');
+                p.insertBefore(halo, p.firstChild);
+            }
         });
 
         map.classList.add('has-selection');
@@ -938,18 +974,18 @@
         });
 
         showTag(origin);
-        if (focusOnPoint) focusOnPoint(origin.x, origin.y, 1.6);
+        if (focusOnPoint) focusOnPoint(origin.x, origin.y, 1.8);
     }
 
     function clearSelection() {
         selectedOrigin = null;
         document.querySelectorAll('.origin-chip').forEach(c => c.classList.remove('active'));
         syncFilterBtns('all', 'all');
-        applyFilters();
         document.querySelectorAll('.bean-pin').forEach(p => {
             p.classList.remove('selected');
             p.style.opacity = '';
         });
+        document.querySelectorAll('.bean-pin .pin-halo').forEach(h => h.remove());
         map.classList.remove('has-selection');
         document.querySelectorAll('g[data-continent].has-selected-continent').forEach(g => {
             g.classList.remove('has-selected-continent');
